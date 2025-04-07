@@ -7,11 +7,11 @@ import {
   StyleSheet, 
   ScrollView, 
   Image, 
-  TouchableOpacity,
-  ImageBackground 
+  TouchableOpacity 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import ExhibitCard from '../components/ExhibitCard';
 
@@ -46,18 +46,19 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
       
-      {/* Featured Banner */}
+      {/* Featured Banner - Custom Gradient */}
       <TouchableOpacity 
         style={styles.featuredBanner}
         onPress={() => navigation.navigate('Exhibits')}
       >
-        <ImageBackground
-          source={require('../../assets/images/featured_banner.jpg')}
-          style={styles.bannerImage}
-          imageStyle={{ borderRadius: 16 }}
+        <LinearGradient
+          colors={['#8C52FF', '#5E35B1']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.bannerGradient}
         >
-          <View style={styles.bannerOverlay}>
-            <View style={styles.bannerContent}>
+          <View style={styles.bannerContent}>
+            <View style={styles.bannerTextContent}>
               <Text style={styles.bannerTitle}>Explore the Museum</Text>
               <Text style={styles.bannerSubtitle}>Discover our collection of iconic exhibits</Text>
               <View style={styles.bannerButton}>
@@ -65,8 +66,11 @@ const HomeScreen = () => {
                 <Ionicons name="arrow-forward" size={16} color="#fff" />
               </View>
             </View>
+            <View style={styles.bannerIconContainer}>
+              <Ionicons name="compass" size={80} color="rgba(255, 255, 255, 0.3)" />
+            </View>
           </View>
-        </ImageBackground>
+        </LinearGradient>
       </TouchableOpacity>
       
       {/* Your Tours Section */}
@@ -198,19 +202,29 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 16,
     overflow: 'hidden',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
-  bannerImage: {
+  bannerGradient: {
     width: '100%',
     height: '100%',
-  },
-  bannerOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
     padding: 20,
   },
   bannerContent: {
-    maxWidth: '70%',
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bannerTextContent: {
+    flex: 2,
+  },
+  bannerIconContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bannerTitle: {
     fontSize: 24,
@@ -220,13 +234,13 @@ const styles = StyleSheet.create({
   },
   bannerSubtitle: {
     fontSize: 14,
-    color: '#fff',
+    color: 'rgba(255, 255, 255, 0.8)',
     marginBottom: 16,
   },
   bannerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(140, 82, 255, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,

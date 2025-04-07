@@ -1,4 +1,4 @@
-// File: App.js - Main entry point & navigation setup
+// File: App.js - Modified to include custom splash screen
 
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,6 +7,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { AppContext } from './src/AppContext';
+
+// Import custom splash screen
+import SplashScreen from './src/components/SplashScreen';
 
 // Import screens
 import AuthScreen from './src/screens/AuthScreen';
@@ -76,6 +79,17 @@ export default function App() {
   const [users, setUsers] = useState(usersData);
   const [exhibits, setExhibits] = useState(exhibitsData);
   const [tours, setTours] = useState(toursData);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Simulate app initialization with our splash screen
+  useEffect(() => {
+    // This simulates loading data or performing initial setup
+    // In a real app, you might load data from AsyncStorage here
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 4000); // Give a little delay to ensure splash animations can complete
+  }, []);
+  
   
   // App context values to be shared across the app
   const contextValue = {
@@ -90,6 +104,11 @@ export default function App() {
     tours,
     setTours,
   };
+
+  // Show splash screen while loading
+  if (isLoading) {
+    return <SplashScreen onFinish={() => setIsLoading(false)} />;
+  }
 
   return (
     <AppContext.Provider value={contextValue}>
