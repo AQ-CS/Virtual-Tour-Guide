@@ -1,0 +1,28 @@
+[
+    {
+      "id": "1",
+      "username": "tourist123",
+      "password": "password123",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "nationality": "USA",
+      "preferences": {
+        "favoriteCategories": ["Ancient Artifacts", "Islamic Art"],
+        "favoriteExhibits": ["2", "5"]
+      },
+      "image": "https://randomuser.me/api/portraits/men/32.jpg"
+    },
+    {
+      "id": "2",
+      "username": "traveler456",
+      "password": "password456",
+      "name": "Sarah Chen",
+      "email": "sarah@example.com",
+      "nationality": "China",
+      "preferences": {
+        "favoriteCategories": ["Modern Art", "Photography"],
+        "favoriteExhibits": ["3", "8"]
+      },
+      "image": "https://randomuser.me/api/portraits/women/44.jpg"
+    }
+  ]
