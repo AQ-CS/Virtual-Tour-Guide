@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "expo": "~52.0.43",
+    "expo-gl": "~15.0.5",
     "expo-status-bar": "~2.0.1",
+    "expo-three": "^8.0.0",
     "react": "18.3.1",
     "react-native": "0.76.9",
-    "react-native-reanimated": "~3.16.1",
     "react-native-gesture-handler": "~2.20.2",
-    "expo-gl": "~15.0.5"
+    "react-native-reanimated": "~3.16.1",
+    "three": "^0.166.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
