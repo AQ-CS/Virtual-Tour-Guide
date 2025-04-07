@@ -64,7 +64,7 @@ const SplashScreen = ({ onFinish }) => {
         {/* Logo */}
         <Animated.View style={[styles.logoContainer, { opacity: logoFadeIn }]}>
           <Image 
-            source={require('../../assets/images/logo.png')} 
+            source={require('../../assets/images/Logo_white_trans.png')} 
             style={styles.logo}
             resizeMode="contain"
           />

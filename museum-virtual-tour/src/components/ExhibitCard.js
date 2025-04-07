@@ -1,8 +1,10 @@
-// File: src/components/ExhibitCard.js - For displaying exhibits
+// File: src/components/ExhibitCard.js - Enhanced with modern design elements
 
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
   // Default image if none provided or for testing without real images
@@ -12,7 +14,7 @@ const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
   
   if (compact) {
     return (
-      <TouchableOpacity style={styles.compactContainer} onPress={onPress}>
+      <TouchableOpacity style={styles.compactContainer} onPress={onPress} activeOpacity={0.9}>
         <Image source={imageSrc} style={styles.compactImage} />
         <View style={styles.compactInfo}>
           <Text style={styles.compactTitle} numberOfLines={1}>{exhibit.name}</Text>
@@ -23,9 +25,14 @@ const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.9}>
       <Image source={imageSrc} style={styles.image} />
-      <View style={styles.overlay}>
+      
+      {/* Semi-transparent gradient overlay */}
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.7)']}
+        style={styles.overlay}
+      >
         <View style={styles.contentContainer}>
           <Text style={styles.title}>{exhibit.name}</Text>
           <View style={styles.detailsRow}>
@@ -38,14 +45,24 @@ const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
           </View>
         </View>
         
+        {/* Glass-morphism add button */}
         {onAddToTour && (
           <TouchableOpacity 
             style={styles.addButton}
             onPress={() => onAddToTour(exhibit)}
           >
-            <Ionicons name="add-circle" size={32} color="#8C52FF" />
+            <BlurView intensity={70} tint="light" style={styles.addButtonBlur}>
+              <Ionicons name="add" size={24} color="#8C52FF" />
+            </BlurView>
           </TouchableOpacity>
         )}
+      </LinearGradient>
+      
+      {/* Category badge */}
+      <View style={styles.categoryBadge}>
+        <BlurView intensity={80} tint="light" style={styles.categoryBlur}>
+          <Text style={styles.categoryText}>{exhibit.category}</Text>
+        </BlurView>
       </View>
     </TouchableOpacity>
   );
@@ -53,16 +70,17 @@ const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 15,
-    borderRadius: 12,
+    marginBottom: 20,
+    borderRadius: 20,
     backgroundColor: '#fff',
-    elevation: 3,
+    elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
     overflow: 'hidden',
     height: 200,
+    position: 'relative',
   },
   image: {
     width: '100%',
@@ -71,7 +89,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
     padding: 16,
     justifyContent: 'flex-end',
     flexDirection: 'row',
@@ -104,39 +121,70 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
   },
   rating: {
     color: '#fff',
     marginLeft: 4,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
   },
+  // Glass morphism add button
   addButton: {
     alignSelf: 'flex-end',
-    backgroundColor: '#fff',
+    width: 40,
+    height: 40,
     borderRadius: 20,
     overflow: 'hidden',
+  },
+  addButtonBlur: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  // Category badge
+  categoryBadge: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  categoryBlur: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  categoryText: {
+    color: '#333',
+    fontSize: 12,
+    fontWeight: '600',
   },
   // Compact card styles
   compactContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
     padding: 10,
     backgroundColor: '#fff',
-    borderRadius: 8,
-    elevation: 2,
+    borderRadius: 16,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
   },
   compactImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 6,
+    width: 70,
+    height: 70,
+    borderRadius: 12,
     marginRight: 12,
   },
   compactInfo: {

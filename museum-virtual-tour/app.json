@@ -4,7 +4,7 @@
     "slug": "uae-museum-tour-guide",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/Logo_white_trans.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",

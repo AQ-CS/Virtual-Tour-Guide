@@ -1,28 +1,32 @@
 [
-    {
-      "id": "1",
-      "username": "tourist123",
-      "password": "password123",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "nationality": "USA",
-      "preferences": {
-        "favoriteCategories": ["Ancient Artifacts", "Islamic Art"],
-        "favoriteExhibits": ["2", "5"]
-      },
-      "image": "https://randomuser.me/api/portraits/men/32.jpg"
-    },
-    {
-      "id": "2",
-      "username": "traveler456",
-      "password": "password456",
-      "name": "Sarah Chen",
-      "email": "sarah@example.com",
-      "nationality": "China",
-      "preferences": {
-        "favoriteCategories": ["Modern Art", "Photography"],
-        "favoriteExhibits": ["3", "8"]
-      },
-      "image": "https://randomuser.me/api/portraits/women/44.jpg"
-    }
-  ]
+  {
+    "id": "1",
+    "userId": "1",
+    "name": "Islamic Art Highlights",
+    "date": "2025-04-20",
+    "time": "10:00",
+    "duration": 90,
+    "exhibits": ["2", "5"],
+    "status": "upcoming"
+  },
+  {
+    "id": "2",
+    "userId": "1",
+    "name": "Cultural Experience",
+    "date": "2025-04-15",
+    "time": "14:30",
+    "duration": 120,
+    "exhibits": ["1", "3", "4"],
+    "status": "upcoming"
+  },
+  {
+    "id": "3",
+    "userId": "2",
+    "name": "Quick Museum Visit",
+    "date": "2025-04-10",
+    "time": "16:00",
+    "duration": 60,
+    "exhibits": ["3", "4"],
+    "status": "completed"
+  }
+]

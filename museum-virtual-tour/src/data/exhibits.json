@@ -1,28 +1,62 @@
 [
-    {
-      "id": "1",
-      "username": "tourist123",
-      "password": "password123",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "nationality": "USA",
-      "preferences": {
-        "favoriteCategories": ["Ancient Artifacts", "Islamic Art"],
-        "favoriteExhibits": ["2", "5"]
-      },
-      "image": "https://randomuser.me/api/portraits/men/32.jpg"
-    },
-    {
-      "id": "2",
-      "username": "traveler456",
-      "password": "password456",
-      "name": "Sarah Chen",
-      "email": "sarah@example.com",
-      "nationality": "China",
-      "preferences": {
-        "favoriteCategories": ["Modern Art", "Photography"],
-        "favoriteExhibits": ["3", "8"]
-      },
-      "image": "https://randomuser.me/api/portraits/women/44.jpg"
-    }
-  ]
+  {
+    "id": "1",
+    "name": "Pearl Diving Heritage",
+    "category": "Cultural Heritage",
+    "description": "This exhibit showcases the rich pearl diving tradition of the UAE, featuring historical diving equipment, pearls, and interactive displays on the life of pearl divers.",
+    "location": "West Wing, Floor 1",
+    "coordinates": {"x": 120, "y": 150, "floor": 1},
+    "image": "pearl_diving.jpg",
+    "rating": 4.8,
+    "comments": [
+      {"userId": "1", "comment": "Fascinating history! I never knew how important pearl diving was.", "rating": 5},
+      {"userId": "2", "comment": "The interactive elements were fun and educational.", "rating": 4}
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Islamic Golden Age Innovations",
+    "category": "Islamic Art",
+    "description": "Discover the scientific and technological innovations from the Islamic Golden Age, including astrolabes, surgical instruments, and architectural designs.",
+    "location": "East Wing, Floor 2",
+    "coordinates": {"x": 210, "y": 180, "floor": 2},
+    "image": "islamic_innovations.jpg",
+    "rating": 4.9,
+    "comments": [
+      {"userId": "2", "comment": "Mind-blowing to see these ancient innovations still influencing today's technology.", "rating": 5}
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Desert Life Adaptation",
+    "category": "Natural History",
+    "description": "Learn how plants, animals, and people have adapted to thrive in the harsh desert environment of the UAE throughout history.",
+    "location": "North Wing, Floor 1",
+    "coordinates": {"x": 150, "y": 90, "floor": 1},
+    "image": "desert_life.jpg",
+    "rating": 4.7,
+    "comments": []
+  },
+  {
+    "id": "4",
+    "name": "Modern UAE Architecture",
+    "category": "Modern Art",
+    "description": "Explore the striking evolution of UAE architecture, from traditional wind towers to the futuristic skylines of today.",
+    "location": "Central Hall, Floor 3",
+    "coordinates": {"x": 180, "y": 180, "floor": 3},
+    "image": "uae_architecture.jpg",
+    "rating": 4.6,
+    "comments": []
+  },
+  {
+    "id": "5",
+    "name": "Calligraphy Through Centuries",
+    "category": "Islamic Art",
+    "description": "A stunning collection of Islamic calligraphy works spanning over a thousand years, showing the evolution of this revered art form.",
+    "location": "East Wing, Floor 2",
+    "coordinates": {"x": 230, "y": 150, "floor": 2},
+    "image": "calligraphy.jpg",
+    "rating": 4.9,
+    "comments": []
+  }
+]
