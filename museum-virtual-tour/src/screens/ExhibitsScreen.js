@@ -1,4 +1,4 @@
-// File: src/screens/ExhibitsScreen.js - Browse & view exhibits
+// File: src/screens/ExhibitsScreen.js - Browse & view exhibits with updated color scheme
 
 import React, { useState, useContext, useEffect } from 'react';
 import { 
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
@@ -120,22 +121,31 @@ const ExhibitsScreen = () => {
   
   return (
     <View style={styles.container}>
+      {/* Purple-white gradient background */}
+      <LinearGradient
+        colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.backgroundGradient}
+      />
+      
       <AppHeader 
         title="Explore Exhibits" 
       />
       
       {/* Search bar */}
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+        <Ionicons name="search" size={20} color="#8C52FF" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search exhibits..."
           value={searchQuery}
           onChangeText={setSearchQuery}
+          placeholderTextColor="#888"
         />
         {searchQuery !== '' && (
           <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={20} color="#666" />
+            <Ionicons name="close-circle" size={20} color="#8C52FF" />
           </TouchableOpacity>
         )}
       </View>
@@ -179,6 +189,13 @@ const ExhibitsScreen = () => {
       >
         {selectedExhibit && (
           <View style={styles.modalContainer}>
+            <LinearGradient
+              colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.backgroundGradient}
+            />
+            
             <AppHeader 
               title="Exhibit Details" 
               onBackPress={() => setDetailsVisible(false)}
@@ -187,14 +204,16 @@ const ExhibitsScreen = () => {
             />
             
             <ScrollView style={styles.modalContent}>
-              <Image 
-                source={
-                  selectedExhibit.image.includes('http') 
-                    ? { uri: selectedExhibit.image } 
-                    : require('../../assets/images/placeholder.png')
-                }
-                style={styles.exhibitImage}
-              />
+              <View style={styles.exhibitImageContainer}>
+                <Image 
+                  source={
+                    selectedExhibit.image.includes('http') 
+                      ? { uri: selectedExhibit.image } 
+                      : require('../../assets/images/placeholder.png')
+                  }
+                  style={styles.exhibitImage}
+                />
+              </View>
               
               <View style={styles.exhibitInfo}>
                 <Text style={styles.exhibitTitle}>{selectedExhibit.name}</Text>
@@ -243,6 +262,7 @@ const ExhibitsScreen = () => {
                     multiline
                     value={selectedExhibitComment}
                     onChangeText={setSelectedExhibitComment}
+                    placeholderTextColor="#999"
                   />
                   
                   <TouchableOpacity 
@@ -264,22 +284,28 @@ const ExhibitsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+  },
+  backgroundGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: 'white',
+    borderRadius: 16,
     marginHorizontal: 16,
     marginVertical: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 3,
   },
   searchIcon: {
     marginRight: 8,
@@ -287,6 +313,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
+    color: '#333',
   },
   categoriesContainer: {
     marginBottom: 8,
@@ -298,8 +325,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(140, 82, 255, 0.2)',
   },
   selectedCategoryChip: {
     backgroundColor: '#8C52FF',
@@ -317,18 +346,27 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   modalContent: {
     flex: 1,
   },
-  exhibitImage: {
+  exhibitImageContainer: {
     width: '100%',
     height: 250,
+    overflow: 'hidden',
+  },
+  exhibitImage: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'cover',
   },
   exhibitInfo: {
     padding: 16,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    marginTop: -20,
+    paddingTop: 24,
   },
   exhibitTitle: {
     fontSize: 24,
@@ -369,7 +407,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 24,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: 'rgba(140, 82, 255, 0.1)',
   },
   ratingTitle: {
     fontSize: 18,
@@ -386,13 +424,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   commentInput: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9f7ff',
     borderRadius: 8,
     padding: 16,
     minHeight: 120,
     textAlignVertical: 'top',
     marginBottom: 16,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(140, 82, 255, 0.1)',
+    color: '#333',
   },
   submitButton: {
     backgroundColor: '#8C52FF',
@@ -400,6 +441,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 30,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   submitButtonText: {
     color: '#fff',

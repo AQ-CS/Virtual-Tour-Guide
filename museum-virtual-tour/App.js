@@ -1,11 +1,14 @@
-// File: App.js - Modified to include custom splash screen
+// File: App.js - With enhanced navbar design
 
 import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { AppContext } from './src/AppContext';
 
 // Import custom splash screen
@@ -28,6 +31,28 @@ import toursData from './src/data/tours.json';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Custom tab bar icon component with gradient background
+function TabBarIcon({ focused, name, color }) {
+  return (
+    <View style={styles.iconContainer}>
+      {focused ? (
+        <LinearGradient
+          colors={['#8C52FF', '#A67FFB']}
+          style={styles.iconBackground}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <Ionicons name={name} size={22} color="#fff" />
+        </LinearGradient>
+      ) : (
+        <View style={styles.inactiveIconContainer}>
+          <Ionicons name={name} size={22} color="#888" />
+        </View>
+      )}
+    </View>
+  );
+}
+
 function MainTabNavigator() {
   return (
     <Tab.Navigator
@@ -49,18 +74,43 @@ function MainTabNavigator() {
             iconName = focused ? 'people' : 'people-outline';
           }
           
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <TabBarIcon focused={focused} name={iconName} color={color} />;
         },
         tabBarActiveTintColor: '#8C52FF',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: '#888',
         tabBarStyle: {
           elevation: 0,
           borderTopWidth: 0,
           backgroundColor: '#FFFFFF',
-          paddingBottom: 5,
-          height: 60,
+          height: 70,
+          paddingTop: 5,
+          paddingBottom: 10,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          position: 'absolute',
+          ...Platform.select({
+            ios: {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+            },
+            android: {
+              elevation: 15,
+            },
+          }),
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+          marginBottom: 5,
         },
         headerShown: false,
+        tabBarShowLabel: true,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -90,7 +140,6 @@ export default function App() {
     }, 4000); // Give a little delay to ensure splash animations can complete
   }, []);
   
-  
   // App context values to be shared across the app
   const contextValue = {
     isLoggedIn,
@@ -113,7 +162,7 @@ export default function App() {
   return (
     <AppContext.Provider value={contextValue}>
       <NavigationContainer>
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {!isLoggedIn ? (
             <Stack.Screen name="Auth" component={AuthScreen} />
@@ -125,3 +174,32 @@ export default function App() {
     </AppContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 48,
+    height: 48,
+  },
+  iconBackground: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#8C52FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  inactiveIconContainer: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f8f8',
+  },
+});
