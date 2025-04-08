@@ -1,4 +1,4 @@
-// File: src/screens/TourScreen.js - All tour functionality
+// File: src/screens/TourScreen.js - All tour functionality with updated color scheme
 
 import React, { useState, useContext, useEffect } from 'react';
 import { 
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import TourItem from '../components/TourItem';
@@ -93,7 +94,7 @@ const TourScreen = () => {
     setTours(updatedTours);
   };
 
-const handleCreateTour = () => {
+  const handleCreateTour = () => {
     // Validate inputs
     if (!newTourName || !newTourDate || !newTourTime || newTourExhibits.length === 0) {
       alert('Please fill all fields and select at least one exhibit');
@@ -157,6 +158,14 @@ const handleCreateTour = () => {
   
   return (
     <View style={styles.container}>
+      {/* Purple-white gradient background */}
+      <LinearGradient
+        colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.backgroundGradient}
+      />
+      
       <AppHeader 
         title="Your Tours" 
         rightIcon="add-circle-outline"
@@ -252,7 +261,7 @@ const handleCreateTour = () => {
         />
       ) : (
         <View style={styles.emptyStateContainer}>
-          <Ionicons name="calendar-outline" size={64} color="#ccc" />
+          <Ionicons name="calendar-outline" size={64} color="#8C52FF" />
           <Text style={styles.emptyStateTitle}>No tours found</Text>
           <Text style={styles.emptyStateMessage}>
             {selectedFilter === 'all' 
@@ -284,6 +293,13 @@ const handleCreateTour = () => {
       >
         {selectedTour && (
           <View style={styles.modalContainer}>
+            <LinearGradient
+              colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.backgroundGradient}
+            />
+            
             <AppHeader 
               title="Tour Details" 
               onBackPress={() => setModalVisible(false)}
@@ -295,64 +311,66 @@ const handleCreateTour = () => {
             />
             
             <ScrollView style={styles.modalContent}>
-              <View style={styles.tourHeader}>
-                <Text style={styles.tourTitle}>{selectedTour.name}</Text>
-                <View style={[
-                  styles.statusBadge, 
-                  { backgroundColor: 
-                    selectedTour.status === 'upcoming' ? '#8C52FF' :
-                    selectedTour.status === 'completed' ? '#28a745' : '#dc3545'
-                  }
-                ]}>
-                  <Text style={styles.statusText}>{selectedTour.status}</Text>
+              <View style={styles.modalCard}>
+                <View style={styles.tourHeader}>
+                  <Text style={styles.tourTitle}>{selectedTour.name}</Text>
+                  <View style={[
+                    styles.statusBadge, 
+                    { backgroundColor: 
+                      selectedTour.status === 'upcoming' ? '#8C52FF' :
+                      selectedTour.status === 'completed' ? '#28a745' : '#dc3545'
+                    }
+                  ]}>
+                    <Text style={styles.statusText}>{selectedTour.status}</Text>
+                  </View>
                 </View>
-              </View>
-              
-              <View style={styles.tourInfoSection}>
-                <View style={styles.tourInfoItem}>
-                  <Ionicons name="calendar-outline" size={20} color="#666" />
-                  <Text style={styles.tourInfoText}>Date: {selectedTour.date}</Text>
-                </View>
-                <View style={styles.tourInfoItem}>
-                  <Ionicons name="time-outline" size={20} color="#666" />
-                  <Text style={styles.tourInfoText}>Time: {selectedTour.time}</Text>
-                </View>
-                <View style={styles.tourInfoItem}>
-                  <Ionicons name="hourglass-outline" size={20} color="#666" />
-                  <Text style={styles.tourInfoText}>Duration: {selectedTour.duration} minutes</Text>
-                </View>
-              </View>
-              
-              <View style={styles.exhibitsSection}>
-                <Text style={styles.sectionTitle}>Tour Exhibits</Text>
                 
-                {selectedTour.exhibits.map(exhibitId => {
-                  const exhibit = getExhibitById(exhibitId);
-                  return exhibit ? (
-                    <ExhibitCard
-                      key={exhibit.id}
-                      exhibit={exhibit}
-                      compact={true}
-                      onPress={() => {
-                        setModalVisible(false);
-                        navigation.navigate('Exhibits', { exhibitId: exhibit.id });
-                      }}
-                    />
-                  ) : null;
-                })}
+                <View style={styles.tourInfoSection}>
+                  <View style={styles.tourInfoItem}>
+                    <Ionicons name="calendar-outline" size={20} color="#666" />
+                    <Text style={styles.tourInfoText}>Date: {selectedTour.date}</Text>
+                  </View>
+                  <View style={styles.tourInfoItem}>
+                    <Ionicons name="time-outline" size={20} color="#666" />
+                    <Text style={styles.tourInfoText}>Time: {selectedTour.time}</Text>
+                  </View>
+                  <View style={styles.tourInfoItem}>
+                    <Ionicons name="hourglass-outline" size={20} color="#666" />
+                    <Text style={styles.tourInfoText}>Duration: {selectedTour.duration} minutes</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.exhibitsSection}>
+                  <Text style={styles.sectionTitle}>Tour Exhibits</Text>
+                  
+                  {selectedTour.exhibits.map(exhibitId => {
+                    const exhibit = getExhibitById(exhibitId);
+                    return exhibit ? (
+                      <ExhibitCard
+                        key={exhibit.id}
+                        exhibit={exhibit}
+                        compact={true}
+                        onPress={() => {
+                          setModalVisible(false);
+                          navigation.navigate('Exhibits', { exhibitId: exhibit.id });
+                        }}
+                      />
+                    ) : null;
+                  })}
+                </View>
+                
+                {selectedTour.status === 'upcoming' && (
+                  <TouchableOpacity
+                    style={styles.cancelTourButton}
+                    onPress={() => {
+                      handleCancelTour(selectedTour);
+                      setModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.cancelTourButtonText}>Cancel Tour</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-              
-              {selectedTour.status === 'upcoming' && (
-                <TouchableOpacity
-                  style={styles.cancelTourButton}
-                  onPress={() => {
-                    handleCancelTour(selectedTour);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.cancelTourButtonText}>Cancel Tour</Text>
-                </TouchableOpacity>
-              )}
             </ScrollView>
           </View>
         )}
@@ -366,81 +384,90 @@ const handleCreateTour = () => {
         onRequestClose={() => setCreateModalVisible(false)}
       >
         <View style={styles.modalContainer}>
+          <LinearGradient
+            colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.backgroundGradient}
+          />
+          
           <AppHeader 
             title={selectedTour ? "Edit Tour" : "Create Tour"} 
             onBackPress={() => setCreateModalVisible(false)}
           />
           
           <ScrollView style={styles.modalContent}>
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Tour Name</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="Enter tour name"
-                value={newTourName}
-                onChangeText={setNewTourName}
-              />
-            </View>
-            
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Date</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="YYYY-MM-DD"
-                value={newTourDate}
-                onChangeText={setNewTourDate}
-              />
-            </View>
-            
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Time</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="HH:MM"
-                value={newTourTime}
-                onChangeText={setNewTourTime}
-              />
-            </View>
-            
-            <View style={styles.formGroup}>
-              <View style={styles.exhibitSelectorHeader}>
-                <Text style={styles.formLabel}>Selected Exhibits</Text>
-                <TouchableOpacity
-                  style={styles.addExhibitButton}
-                  onPress={() => setShowExhibitsSelector(true)}
-                >
-                  <Text style={styles.addExhibitButtonText}>+ Add Exhibit</Text>
-                </TouchableOpacity>
+            <View style={styles.modalCard}>
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>Tour Name</Text>
+                <TextInput
+                  style={styles.formInput}
+                  placeholder="Enter tour name"
+                  value={newTourName}
+                  onChangeText={setNewTourName}
+                />
               </View>
               
-              {newTourExhibits.length > 0 ? (
-                newTourExhibits.map(exhibitId => {
-                  const exhibit = getExhibitById(exhibitId);
-                  return exhibit ? (
-                    <View key={exhibit.id} style={styles.selectedExhibitItem}>
-                      <Text style={styles.selectedExhibitName}>{exhibit.name}</Text>
-                      <TouchableOpacity
-                        onPress={() => handleRemoveExhibit(exhibit.id)}
-                        style={styles.removeExhibitButton}
-                      >
-                        <Ionicons name="close-circle" size={24} color="#dc3545" />
-                      </TouchableOpacity>
-                    </View>
-                  ) : null;
-                })
-              ) : (
-                <Text style={styles.noExhibitsText}>No exhibits selected</Text>
-              )}
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>Date</Text>
+                <TextInput
+                  style={styles.formInput}
+                  placeholder="YYYY-MM-DD"
+                  value={newTourDate}
+                  onChangeText={setNewTourDate}
+                />
+              </View>
+              
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>Time</Text>
+                <TextInput
+                  style={styles.formInput}
+                  placeholder="HH:MM"
+                  value={newTourTime}
+                  onChangeText={setNewTourTime}
+                />
+              </View>
+              
+              <View style={styles.formGroup}>
+                <View style={styles.exhibitSelectorHeader}>
+                  <Text style={styles.formLabel}>Selected Exhibits</Text>
+                  <TouchableOpacity
+                    style={styles.addExhibitButton}
+                    onPress={() => setShowExhibitsSelector(true)}
+                  >
+                    <Text style={styles.addExhibitButtonText}>+ Add Exhibit</Text>
+                  </TouchableOpacity>
+                </View>
+                
+                {newTourExhibits.length > 0 ? (
+                  newTourExhibits.map(exhibitId => {
+                    const exhibit = getExhibitById(exhibitId);
+                    return exhibit ? (
+                      <View key={exhibit.id} style={styles.selectedExhibitItem}>
+                        <Text style={styles.selectedExhibitName}>{exhibit.name}</Text>
+                        <TouchableOpacity
+                          onPress={() => handleRemoveExhibit(exhibit.id)}
+                          style={styles.removeExhibitButton}
+                        >
+                          <Ionicons name="close-circle" size={24} color="#dc3545" />
+                        </TouchableOpacity>
+                      </View>
+                    ) : null;
+                  })
+                ) : (
+                  <Text style={styles.noExhibitsText}>No exhibits selected</Text>
+                )}
+              </View>
+              
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleCreateTour}
+              >
+                <Text style={styles.createButtonText}>
+                  {selectedTour ? "Save Changes" : "Create Tour"}
+                </Text>
+              </TouchableOpacity>
             </View>
-            
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={handleCreateTour}
-            >
-              <Text style={styles.createButtonText}>
-                {selectedTour ? "Save Changes" : "Create Tour"}
-              </Text>
-            </TouchableOpacity>
           </ScrollView>
           
           {/* Exhibits Selector Modal */}
@@ -486,15 +513,21 @@ const handleCreateTour = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+  },
+  backgroundGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   filterContainer: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
   },
   filterTab: {
     paddingVertical: 8,
@@ -507,7 +540,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontSize: 14,
-    color: '#666',
+    color: '#fff',
   },
   activeFilterText: {
     color: '#fff',
@@ -522,17 +555,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    margin: 20,
+    borderRadius: 16,
   },
   emptyStateTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyStateMessage: {
     fontSize: 16,
-    color: '#666',
+    color: '#fff',
     textAlign: 'center',
     marginBottom: 32,
   },
@@ -541,6 +577,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   createTourButtonText: {
     color: '#fff',
@@ -549,11 +590,16 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   modalContent: {
     flex: 1,
     padding: 16,
+  },
+  modalCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
   },
   tourHeader: {
     flexDirection: 'row',
@@ -606,7 +652,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 16,
-    marginBottom: 32,
+    marginBottom: 8,
   },
   cancelTourButtonText: {
     color: '#dc3545',
@@ -623,10 +669,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   formInput: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9f7ff',
     borderRadius: 8,
     padding: 16,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(140, 82, 255, 0.2)',
   },
   exhibitSelectorHeader: {
     flexDirection: 'row',
@@ -635,23 +683,25 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addExhibitButton: {
-    backgroundColor: '#e6f7ff',
+    backgroundColor: 'rgba(140, 82, 255, 0.1)',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
   },
   addExhibitButtonText: {
-    color: '#1890ff',
+    color: '#8C52FF',
     fontWeight: '500',
   },
   selectedExhibitItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f9f7ff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(140, 82, 255, 0.1)',
   },
   selectedExhibitName: {
     fontSize: 16,
@@ -665,7 +715,7 @@ const styles = StyleSheet.create({
     color: '#666',
     fontStyle: 'italic',
     padding: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f9f7ff',
     borderRadius: 8,
   },
   createButton: {
@@ -674,7 +724,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 16,
-    marginBottom: 32,
+    marginBottom: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   createButtonText: {
     color: '#fff',

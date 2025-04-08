@@ -1,4 +1,4 @@
-// File: src/screens/ProfileScreen.js - User profile management
+// File: src/screens/ProfileScreen.js - User profile management with updated color scheme
 
 import React, { useContext, useState } from 'react';
 import { 
@@ -13,6 +13,7 @@ import {
   FlatList
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
@@ -46,6 +47,14 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Purple-white gradient background */}
+      <LinearGradient
+        colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.backgroundGradient}
+      />
+      
       <AppHeader 
         title="Profile" 
         rightIcon={editMode ? null : "create-outline"}
@@ -54,7 +63,10 @@ const ProfileScreen = () => {
       
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
-          <Image source={{ uri: currentUser.image }} style={styles.profileImage} />
+          <View style={styles.profileImageWrapper}>
+            <Image source={{ uri: currentUser.image }} style={styles.profileImage} />
+          </View>
+          
           {!editMode ? (
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{currentUser.name}</Text>
@@ -194,7 +206,7 @@ const ProfileScreen = () => {
               />
             ) : (
               <View style={styles.emptyFavorites}>
-                <Ionicons name="heart-outline" size={48} color="#ccc" />
+                <Ionicons name="heart-outline" size={48} color="#8C52FF" />
                 <Text style={styles.emptyFavoritesText}>
                   You haven't added any favorite exhibits yet
                 </Text>
@@ -210,29 +222,40 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+  },
+  backgroundGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   content: {
     flex: 1,
     padding: 16,
   },
   profileHeader: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 24,
     marginBottom: 16,
     alignItems: 'center',
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 3,
+  },
+  profileImageWrapper: {
+    padding: 3,
+    borderRadius: 53,
+    backgroundColor: 'rgba(140, 82, 255, 0.1)',
+    marginBottom: 16,
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginBottom: 16,
   },
   userInfo: {
     alignItems: 'center',
@@ -252,10 +275,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9f7ff',
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(140, 82, 255, 0.2)',
   },
   editButtons: {
     flexDirection: 'row',
@@ -269,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#f8d7da',
+    backgroundColor: '#fbeaec',
     marginRight: 8,
   },
   saveButton: {
@@ -285,21 +310,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   sectionCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    elevation: 1,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 1,
+    shadowRadius: 2,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(140, 82, 255, 0.1)',
   },
   sectionTitle: {
     fontSize: 18,
@@ -323,7 +351,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   categoryChip: {
-    backgroundColor: '#e6f7ff',
+    backgroundColor: 'rgba(140, 82, 255, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -331,7 +359,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   categoryChipText: {
-    color: '#1890ff',
+    color: '#8C52FF',
     fontWeight: '500',
   },
   emptyPreferenceText: {
@@ -348,6 +376,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 16,
     marginBottom: 32,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   logoutButtonText: {
     color: '#fff',

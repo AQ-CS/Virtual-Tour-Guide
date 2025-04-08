@@ -1,4 +1,4 @@
-// File: src/screens/NavigationScreen.js - 3D navigation
+// File: src/screens/NavigationScreen.js - 3D navigation with updated color scheme
 
 import React, { useState, useRef, useContext } from 'react';
 import { 
@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
@@ -37,7 +38,7 @@ const NavigationScreen = () => {
           #museum-map {
             width: 100%;
             height: 100%;
-            background-color: #f9f9f9;
+            background-color: #f9f7ff;
             position: relative;
           }
           .floor-layout {
@@ -144,6 +145,14 @@ const NavigationScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Purple-white gradient background */}
+      <LinearGradient
+        colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.backgroundGradient}
+      />
+      
       <AppHeader 
         title="3D Navigation" 
         rightIcon="search"
@@ -151,11 +160,13 @@ const NavigationScreen = () => {
       />
       
       <View style={styles.navigationContainer}>
-        <WebView
-          ref={webViewRef}
-          source={{ html: navigationHTML }}
-          style={styles.webView}
-        />
+        <View style={styles.webViewContainer}>
+          <WebView
+            ref={webViewRef}
+            source={{ html: navigationHTML }}
+            style={styles.webView}
+          />
+        </View>
         
         {isNavigating && selectedExhibit && (
           <View style={styles.navigationInfo}>
@@ -254,11 +265,28 @@ const NavigationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  backgroundGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   navigationContainer: {
     flex: 1,
     position: 'relative',
+    padding: 8,
+  },
+  webViewContainer: {
+    flex: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   webView: {
     flex: 1,
@@ -268,7 +296,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 20,
     right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
     elevation: 4,
@@ -305,12 +333,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   floorTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: '#fff',
   },
   floorButtons: {
     flexDirection: 'row',
@@ -319,7 +348,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
@@ -330,7 +359,7 @@ const styles = StyleSheet.create({
   floorButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666',
+    color: '#fff',
   },
   activeFloorButtonText: {
     color: '#fff',
