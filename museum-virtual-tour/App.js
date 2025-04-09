@@ -1,4 +1,4 @@
-// File: App.js - With enhanced navbar design
+// File: App.js - With fixed navbar icon spacing
 
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
@@ -82,16 +82,16 @@ function MainTabNavigator() {
           elevation: 0,
           borderTopWidth: 0,
           backgroundColor: '#FFFFFF',
-          height: 70,
-          paddingTop: 5,
-          paddingBottom: 10,
+          height: 80, // Increased height to accommodate icons and labels
+          paddingTop: 10,
+          paddingBottom: 15,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.1,
           shadowRadius: 8,
-          position: 'absolute',
+          // Removed position: 'absolute' so tab bar doesn't overlay content
           ...Platform.select({
             ios: {
               shadowColor: '#000',
@@ -107,7 +107,12 @@ function MainTabNavigator() {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
+          marginTop: 6, // Add more space above the label
           marginBottom: 5,
+        },
+        tabBarItemStyle: {
+          paddingTop: 5, // Add padding to the entire tab item
+          paddingBottom: 5,
         },
         headerShown: false,
         tabBarShowLabel: true,
@@ -181,6 +186,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 48,
     height: 48,
+    marginBottom: 4, // Add bottom margin to the container for better spacing
   },
   iconBackground: {
     width: 42,
