@@ -1,4 +1,4 @@
-// File: src/screens/CrowdScreen.js - Crowd monitoring
+// File: src/screens/CrowdScreen.js - Crowd monitoring with updated styling
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -10,6 +10,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import AppHeader from '../components/AppHeader';
 
 const CrowdScreen = () => {
@@ -103,6 +104,14 @@ const CrowdScreen = () => {
   
   return (
     <View style={styles.container}>
+      {/* Purple-white gradient background */}
+      <LinearGradient
+        colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.backgroundGradient}
+      />
+      
       <AppHeader title="Crowd Monitoring" />
       
       <ScrollView style={styles.content}>
@@ -180,17 +189,19 @@ const CrowdScreen = () => {
             
             <Text style={styles.sectionTitle}>Today's Visitor Count</Text>
             <View style={styles.chartContainer}>
-              {crowdData.timeOfDay.map((item, index) => (
-                <View key={index} style={styles.chartBarContainer}>
-                  <View 
-                    style={[
-                      styles.chartBar, 
-                      { height: (item.visitors / 250) * 150 }
-                    ]}
-                  />
-                  <Text style={styles.chartLabel}>{item.hour}</Text>
-                </View>
-              ))}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chartContent}>
+                {crowdData.timeOfDay.map((item, index) => (
+                  <View key={index} style={styles.chartBarContainer}>
+                    <View 
+                      style={[
+                        styles.chartBar, 
+                        { height: (item.visitors / 250) * 150 }
+                      ]}
+                    />
+                    <Text style={styles.chartLabel}>{item.hour}</Text>
+                  </View>
+                ))}
+              </ScrollView>
             </View>
           </View>
         )}
@@ -259,22 +270,28 @@ const CrowdScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+  },
+  backgroundGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   content: {
     flex: 1,
     paddingHorizontal: 16,
   },
   summaryCard: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
     marginVertical: 16,
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 3,
   },
   summaryContent: {
     flexDirection: 'row',
@@ -306,10 +323,12 @@ const styles = StyleSheet.create({
   },
   viewSelector: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 8,
     marginVertical: 8,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(140, 82, 255, 0.2)',
   },
   viewTab: {
     flex: 1,
@@ -322,7 +341,7 @@ const styles = StyleSheet.create({
   viewTabText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#666',
+    color: '#333',
   },
   activeViewTabText: {
     color: '#fff',
@@ -339,22 +358,29 @@ const styles = StyleSheet.create({
   heatmapImage: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
+    borderRadius: 16,
     marginBottom: 24,
   },
   chartContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    height: 180,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 16,
     marginBottom: 16,
+    height: 230,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  chartContent: {
+    alignItems: 'flex-end',
+    paddingRight: 8,
   },
   chartBarContainer: {
     alignItems: 'center',
-    width: '8%',
+    width: 40,
+    marginHorizontal: 6,
   },
   chartBar: {
     width: '100%',
@@ -368,15 +394,15 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   floorCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    elevation: 1,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 1,
+    shadowRadius: 3,
   },
   floorHeader: {
     flexDirection: 'row',
@@ -431,10 +457,15 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   exhibitCrowdCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 16,
-    marginBottom: 8,
+    marginBottom: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   exhibitCrowdName: {
     fontSize: 16,
