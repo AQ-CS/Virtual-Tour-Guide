@@ -1,4 +1,4 @@
-// File: src/screens/ProfileScreen.js - User profile management with updated color scheme
+// File: src/screens/ProfileScreen.js - With null check for currentUser
 
 import React, { useContext, useState } from 'react';
 import { 
@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,14 +20,30 @@ import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
 
 const ProfileScreen = () => {
-  const { currentUser, setCurrentUser, exhibits, setIsLoggedIn } = useContext(AppContext);
+  const { currentUser, setCurrentUser, exhibits, handleLogout, isLoading } = useContext(AppContext);
   const [editMode, setEditMode] = useState(false);
   const [showFavoriteExhibits, setShowFavoriteExhibits] = useState(false);
   
   // Edit profile state
-  const [name, setName] = useState(currentUser.name);
-  const [email, setEmail] = useState(currentUser.email);
-  const [nationality, setNationality] = useState(currentUser.nationality || '');
+  const [name, setName] = useState(currentUser?.name || '');
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [nationality, setNationality] = useState(currentUser?.nationality || '');
+  
+  // Show loading indicator if data isn't ready yet
+  if (isLoading || !currentUser) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <LinearGradient
+          colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.backgroundGradient}
+        />
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>Loading your profile...</Text>
+      </View>
+    );
+  }
   
   // Get user's favorite exhibits
   const favoriteExhibits = exhibits.filter(exhibit => 
@@ -167,7 +184,7 @@ const ProfileScreen = () => {
             
             <TouchableOpacity 
               style={styles.logoutButton}
-              onPress={() => setIsLoggedIn(false)}
+              onPress={() => handleLogout()}
             >
               <Ionicons name="log-out-outline" size={20} color="#fff" />
               <Text style={styles.logoutButtonText}>Logout</Text>
@@ -222,6 +239,16 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '500',
   },
   backgroundGradient: {
     position: 'absolute',

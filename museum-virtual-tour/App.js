@@ -1,6 +1,6 @@
-// File: App.js - With fixed navbar icon spacing
+// File: App.js - With updated context provider
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,8 +8,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import { AppContext } from './src/AppContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Import AppContextProvider
+import { AppContext, AppContextProvider } from './src/AppContext';
 
 // Import custom splash screen
 import SplashScreen from './src/components/SplashScreen';
@@ -22,14 +24,11 @@ import TourScreen from './src/screens/TourScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import NavigationScreen from './src/screens/NavigationScreen';
 import CrowdScreen from './src/screens/CrowdScreen';
-
-// Import initial data
-import usersData from './src/data/users.json';
-import exhibitsData from './src/data/exhibits.json';
-import toursData from './src/data/tours.json';
+import SmartAgentScreen from './src/screens/SmartAgentScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const HomeStack = createStackNavigator();
 
 // Custom tab bar icon component with gradient background
 function TabBarIcon({ focused, name, color }) {
@@ -50,6 +49,16 @@ function TabBarIcon({ focused, name, color }) {
         </View>
       )}
     </View>
+  );
+}
+
+// HomeStack to include SmartAgent Screen
+function HomeStackNavigator() {
+  return (
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+      <HomeStack.Screen name="HomeMain" component={HomeScreen} />
+      <HomeStack.Screen name="SmartAgent" component={SmartAgentScreen} />
+    </HomeStack.Navigator>
   );
 }
 
@@ -82,7 +91,7 @@ function MainTabNavigator() {
           elevation: 0,
           borderTopWidth: 0,
           backgroundColor: '#FFFFFF',
-          height: 80, // Increased height to accommodate icons and labels
+          height: 80,
           paddingTop: 10,
           paddingBottom: 15,
           borderTopLeftRadius: 20,
@@ -91,7 +100,6 @@ function MainTabNavigator() {
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.1,
           shadowRadius: 8,
-          // Removed position: 'absolute' so tab bar doesn't overlay content
           ...Platform.select({
             ios: {
               shadowColor: '#000',
@@ -107,18 +115,18 @@ function MainTabNavigator() {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
-          marginTop: 6, // Add more space above the label
+          marginTop: 6,
           marginBottom: 5,
         },
         tabBarItemStyle: {
-          paddingTop: 5, // Add padding to the entire tab item
+          paddingTop: 5,
           paddingBottom: 5,
         },
         headerShown: false,
         tabBarShowLabel: true,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Exhibits" component={ExhibitsScreen} />
       <Tab.Screen name="Tours" component={TourScreen} />
       <Tab.Screen name="Navigate" component={NavigationScreen} />
@@ -128,55 +136,35 @@ function MainTabNavigator() {
   );
 }
 
-export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [users, setUsers] = useState(usersData);
-  const [exhibits, setExhibits] = useState(exhibitsData);
-  const [tours, setTours] = useState(toursData);
-  const [isLoading, setIsLoading] = useState(true);
+function AppNavigator() {
+  const { isLoggedIn, isLoading } = useContext(AppContext);
   
-  // Simulate app initialization with our splash screen
-  useEffect(() => {
-    // This simulates loading data or performing initial setup
-    // In a real app, you might load data from AsyncStorage here
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 4000); // Give a little delay to ensure splash animations can complete
-  }, []);
-  
-  // App context values to be shared across the app
-  const contextValue = {
-    isLoggedIn,
-    setIsLoggedIn,
-    currentUser,
-    setCurrentUser,
-    users,
-    setUsers,
-    exhibits,
-    setExhibits,
-    tours,
-    setTours,
-  };
-
-  // Show splash screen while loading
+  // Show splash screen while loading data
   if (isLoading) {
-    return <SplashScreen onFinish={() => setIsLoading(false)} />;
+    return <SplashScreen />;
   }
-
+  
   return (
-    <AppContext.Provider value={contextValue}>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {!isLoggedIn ? (
-            <Stack.Screen name="Auth" component={AuthScreen} />
-          ) : (
-            <Stack.Screen name="Main" component={MainTabNavigator} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AppContext.Provider>
+    <NavigationContainer>
+      <StatusBar style="light" />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!isLoggedIn ? (
+          <Stack.Screen name="Auth" component={AuthScreen} />
+        ) : (
+          <Stack.Screen name="Main" component={MainTabNavigator} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContextProvider>
+        <AppNavigator />
+      </AppContextProvider>
+    </SafeAreaProvider>
   );
 }
 
@@ -186,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 48,
     height: 48,
-    marginBottom: 4, // Add bottom margin to the container for better spacing
+    marginBottom: 4,
   },
   iconBackground: {
     width: 42,

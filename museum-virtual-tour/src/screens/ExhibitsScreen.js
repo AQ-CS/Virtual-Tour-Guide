@@ -1,4 +1,4 @@
-// File: src/screens/ExhibitsScreen.js - Browse & view exhibits with updated color scheme
+// File: src/screens/ExhibitsScreen.js - With null check for currentUser
 
 import React, { useState, useContext, useEffect } from 'react';
 import { 
@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -22,7 +23,7 @@ import ExhibitCard from '../components/ExhibitCard';
 const ExhibitsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { exhibits, currentUser, tours, setTours } = useContext(AppContext);
+  const { exhibits, currentUser, tours, setTours, isLoading } = useContext(AppContext);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -32,38 +33,58 @@ const ExhibitsScreen = () => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [selectedExhibitRating, setSelectedExhibitRating] = useState(0);
   const [selectedExhibitComment, setSelectedExhibitComment] = useState('');
+
+  // Show loading indicator if data isn't ready yet
+  if (isLoading || !currentUser) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <LinearGradient
+          colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.backgroundGradient}
+        />
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>Loading exhibits...</Text>
+      </View>
+    );
+  }
   
   // Extract all unique categories
   useEffect(() => {
-    const uniqueCategories = ['All', ...new Set(exhibits.map(exhibit => exhibit.category))];
-    setCategories(uniqueCategories);
+    if (exhibits) {
+      const uniqueCategories = ['All', ...new Set(exhibits.map(exhibit => exhibit.category))];
+      setCategories(uniqueCategories);
+    }
   }, [exhibits]);
   
   // Filter exhibits based on search and category
   useEffect(() => {
-    let filtered = [...exhibits];
-    
-    if (searchQuery) {
-      filtered = filtered.filter(exhibit => 
-        exhibit.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exhibit.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(exhibit => exhibit.category === selectedCategory);
-    }
-    
-    setFilteredExhibits(filtered);
-    
-    // Check if we should open a specific exhibit from params
-    if (route.params?.exhibitId) {
-      const exhibit = exhibits.find(ex => ex.id === route.params.exhibitId);
-      if (exhibit) {
-        setSelectedExhibit(exhibit);
-        setDetailsVisible(true);
-        // Clear the parameter after use
-        navigation.setParams({ exhibitId: undefined });
+    if (exhibits) {
+      let filtered = [...exhibits];
+      
+      if (searchQuery) {
+        filtered = filtered.filter(exhibit => 
+          exhibit.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          exhibit.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+      
+      if (selectedCategory !== 'All') {
+        filtered = filtered.filter(exhibit => exhibit.category === selectedCategory);
+      }
+      
+      setFilteredExhibits(filtered);
+      
+      // Check if we should open a specific exhibit from params
+      if (route.params?.exhibitId) {
+        const exhibit = exhibits.find(ex => ex.id === route.params.exhibitId);
+        if (exhibit) {
+          setSelectedExhibit(exhibit);
+          setDetailsVisible(true);
+          // Clear the parameter after use
+          navigation.setParams({ exhibitId: undefined });
+        }
       }
     }
   }, [exhibits, searchQuery, selectedCategory, route.params]);
@@ -284,6 +305,16 @@ const ExhibitsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '500',
   },
   backgroundGradient: {
     position: 'absolute',

@@ -1,4 +1,4 @@
-// File: src/screens/TourScreen.js - All tour functionality with updated color scheme
+// File: src/screens/TourScreen.js - With null check for currentUser
 
 import React, { useState, useContext, useEffect } from 'react';
 import { 
@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  TextInput
+  TextInput,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -22,7 +23,7 @@ import ExhibitCard from '../components/ExhibitCard';
 const TourScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { tours, setTours, currentUser, exhibits } = useContext(AppContext);
+  const { tours, setTours, currentUser, exhibits, isLoading } = useContext(AppContext);
   
   const [userTours, setUserTours] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,6 +37,22 @@ const TourScreen = () => {
   const [newTourTime, setNewTourTime] = useState('');
   const [newTourExhibits, setNewTourExhibits] = useState([]);
   const [showExhibitsSelector, setShowExhibitsSelector] = useState(false);
+
+  // Show loading indicator if data isn't ready yet
+  if (isLoading || !currentUser || !tours || !exhibits) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <LinearGradient
+          colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.backgroundGradient}
+        />
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>Loading your tours...</Text>
+      </View>
+    );
+  }
   
   useEffect(() => {
     // Filter tours by user
@@ -513,6 +530,16 @@ const TourScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '500',
   },
   backgroundGradient: {
     position: 'absolute',

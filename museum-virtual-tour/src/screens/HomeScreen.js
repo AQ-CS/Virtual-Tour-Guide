@@ -1,4 +1,4 @@
-// File: src/screens/HomeScreen.js - With purple-white gradient background
+// File: src/screens/HomeScreen.js - Add null check for currentUser
 
 import React, { useContext, useState, useEffect } from 'react';
 import { 
@@ -8,7 +8,8 @@ import {
   ScrollView, 
   Image, 
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -20,21 +21,40 @@ const { width } = Dimensions.get('window');
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const { currentUser, exhibits, tours } = useContext(AppContext);
+  const { currentUser, exhibits, tours, isLoading } = useContext(AppContext);
   const [popularExhibits, setPopularExhibits] = useState([]);
   const [upcomingTours, setUpcomingTours] = useState([]);
   
   useEffect(() => {
-    // Sort and get top rated exhibits
-    const topRated = [...exhibits].sort((a, b) => b.rating - a.rating).slice(0, 3);
-    setPopularExhibits(topRated);
-    
-    // Get user's upcoming tours
-    const userTours = tours
-      .filter(tour => tour.userId === currentUser.id && tour.status === 'upcoming')
-      .slice(0, 2);
-    setUpcomingTours(userTours);
+    // Only process data when currentUser is available
+    if (currentUser && exhibits && tours) {
+      // Sort and get top rated exhibits
+      const topRated = [...exhibits].sort((a, b) => b.rating - a.rating).slice(0, 3);
+      setPopularExhibits(topRated);
+      
+      // Get user's upcoming tours
+      const userTours = tours
+        .filter(tour => tour.userId === currentUser.id && tour.status === 'upcoming')
+        .slice(0, 2);
+      setUpcomingTours(userTours);
+    }
   }, [exhibits, tours, currentUser]);
+  
+  // Show loading indicator if data isn't ready yet
+  if (isLoading || !currentUser) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <LinearGradient
+          colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.backgroundGradient}
+        />
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>Loading your profile...</Text>
+      </View>
+    );
+  }
   
   return (
     <View style={styles.container}>
@@ -180,7 +200,7 @@ const HomeScreen = () => {
           
           <TouchableOpacity 
             style={styles.quickActionItem}
-            onPress={() => navigation.navigate('Home', { screen: 'SmartAgent' })}
+            onPress={() => navigation.navigate('SmartAgent')}
           >
             <View style={styles.quickActionIconWrapper}>
               <Ionicons name="chatbubble-ellipses" size={24} color="#8C52FF" />
@@ -196,6 +216,16 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '500',
   },
   backgroundGradient: {
     position: 'absolute',
