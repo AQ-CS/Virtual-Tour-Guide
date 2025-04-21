@@ -6,7 +6,7 @@
     "description": "This exhibit showcases the rich pearl diving tradition of the UAE, featuring historical diving equipment, pearls, and interactive displays on the life of pearl divers.",
     "location": "West Wing, Floor 1",
     "coordinates": {"x": 120, "y": 150, "floor": 1},
-    "image": "pearl_diving.jpg",
+    "image": "pearl_diving.png",
     "rating": 4.8,
     "comments": [
       {"userId": "1", "comment": "Fascinating history! I never knew how important pearl diving was.", "rating": 5},

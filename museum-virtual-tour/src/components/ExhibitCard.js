@@ -1,4 +1,4 @@
-// File: src/components/ExhibitCard.js - Enhanced with modern design elements
+// File: src/components/ExhibitCard.js - Enhanced with modern design elements and dynamic image loading
 
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
@@ -6,16 +6,41 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
+// Define an image map - this is how we handle dynamic images in React Native
+// The key should match the filename in your exhibit data
+const exhibitImages = {
+  'pearl_diving.png': require('../../assets/models/pearl_diving.png'),
+  'pearl_diving.jpg': require('../../assets/models/pearl_diving.png'),
+  'islamic_innovations.jpg': require('../../assets/models/golden_age.png'),
+  'desert_life.jpg': require('../../assets/models/desert_life.png'),
+  'uae_architecture.jpg': require('../../assets/models/uae_architecture.png'),
+  'calligraphy.jpg': require('../../assets/models/calligraphy.png'),
+  // Add other exhibit images as needed
+};
+
 const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
-  // Default image if none provided or for testing without real images
-  const imageSrc = exhibit.image.includes('http') 
-    ? { uri: exhibit.image } 
-    : require('../../assets/images/placeholder.png');
+  // Get image source from map or default to placeholder
+  const getImageSource = () => {
+    // If it's a URL, return as uri
+    if (exhibit.image && exhibit.image.startsWith('http')) {
+      return { uri: exhibit.image };
+    }
+    
+    // If the image exists in our map, use it
+    if (exhibit.image && exhibitImages[exhibit.image]) {
+      return exhibitImages[exhibit.image];
+    }
+    
+    // Otherwise use placeholder
+    return require('../../assets/images/placeholder.png');
+  };
+  
+  const imageSource = getImageSource();
   
   if (compact) {
     return (
       <TouchableOpacity style={styles.compactContainer} onPress={onPress} activeOpacity={0.9}>
-        <Image source={imageSrc} style={styles.compactImage} />
+        <Image source={imageSource} style={styles.compactImage} />
         <View style={styles.compactInfo}>
           <Text style={styles.compactTitle} numberOfLines={1}>{exhibit.name}</Text>
           <Text style={styles.compactLocation} numberOfLines={1}>{exhibit.location}</Text>
@@ -26,7 +51,7 @@ const ExhibitCard = ({ exhibit, onPress, onAddToTour, compact = false }) => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.9}>
-      <Image source={imageSrc} style={styles.image} />
+      <Image source={imageSource} style={styles.image} />
       
       {/* Semi-transparent gradient overlay */}
       <LinearGradient
@@ -151,10 +176,11 @@ const styles = StyleSheet.create({
   // Category badge
   categoryBadge: {
     position: 'absolute',
-    top: 16,
+    bottom: 16,
     left: 16,
     borderRadius: 12,
     overflow: 'hidden',
+    zIndex: 10,
   },
   categoryBlur: {
     paddingHorizontal: 12,
