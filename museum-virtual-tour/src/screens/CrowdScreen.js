@@ -1,13 +1,13 @@
-// File: src/screens/CrowdScreen.js - Crowd monitoring with updated styling
+// File: src/screens/CrowdScreen.js - Crowd monitoring with enhanced interactive chart
 
 import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
-  Image, 
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,33 +17,49 @@ const CrowdScreen = () => {
   const [crowdData, setCrowdData] = useState({
     totalVisitors: 248,
     floors: [
-      { id: 1, count: 113, status: 'busy' },
-      { id: 2, count: 82, status: 'moderate' },
-      { id: 3, count: 53, status: 'light' }
+      { id: 1, count: 143, status: 'busy' },
+      { id: 2, count: 105, status: 'moderate' }
     ],
     exhibits: [
-      { id: '1', name: 'Pearl Diving Heritage', count: 32, status: 'busy' },
-      { id: '2', name: 'Islamic Golden Age Innovations', count: 41, status: 'busy' },
-      { id: '5', name: 'Calligraphy Through Centuries', count: 28, status: 'moderate' },
-      { id: '3', name: 'Desert Life Adaptation', count: 19, status: 'light' },
-      { id: '4', name: 'Modern UAE Architecture', count: 22, status: 'moderate' }
+      { id: '1', name: 'Pearl Diving Heritage', count: 45, status: 'busy' },
+      { id: '3', name: 'Desert Life Adaptation', count: 25, status: 'moderate' },
+      { id: '4', name: 'Modern UAE Architecture', count: 32, status: 'moderate' },
+      { id: '2', name: 'Islamic Golden Age Innovations', count: 48, status: 'busy' },
+      { id: '5', name: 'Calligraphy Through Centuries', count: 34, status: 'moderate' }
     ],
     timeOfDay: [
-      { hour: '9AM', visitors: 42 },
-      { hour: '10AM', visitors: 87 },
-      { hour: '11AM', visitors: 134 },
-      { hour: '12PM', visitors: 186 },
-      { hour: '1PM', visitors: 248 },
-      { hour: '2PM', visitors: 215 },
-      { hour: '3PM', visitors: 187 },
-      { hour: '4PM', visitors: 156 },
-      { hour: '5PM', visitors: 120 },
-      { hour: '6PM', visitors: 85 }
+      { hour: '9AM', visitors: 42, status: 'light' },
+      { hour: '10AM', visitors: 87, status: 'moderate' },
+      { hour: '11AM', visitors: 134, status: 'moderate' },
+      { hour: '12PM', visitors: 186, status: 'busy' },
+      { hour: '1PM', visitors: 248, status: 'busy' },
+      { hour: '2PM', visitors: 215, status: 'busy' },
+      { hour: '3PM', visitors: 187, status: 'busy' },
+      { hour: '4PM', visitors: 156, status: 'moderate' },
+      { hour: '5PM', visitors: 120, status: 'moderate' },
+      { hour: '6PM', visitors: 85, status: 'moderate' }
     ],
     lastUpdated: new Date()
   });
   
   const [selectedView, setSelectedView] = useState('overview');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [timeModalVisible, setTimeModalVisible] = useState(false);
+  
+  // Determine status based on visitor count
+  useEffect(() => {
+    const updatedTimeOfDay = crowdData.timeOfDay.map(slot => {
+      let status = 'light';
+      if (slot.visitors > 175) status = 'busy';
+      else if (slot.visitors > 100) status = 'moderate';
+      return { ...slot, status };
+    });
+    
+    setCrowdData(prev => ({
+      ...prev,
+      timeOfDay: updatedTimeOfDay
+    }));
+  }, []);
   
   // Simulate real-time updates
   useEffect(() => {
@@ -56,8 +72,8 @@ const CrowdScreen = () => {
         const variation = Math.floor(Math.random() * 6) - 3;
         const newCount = Math.max(0, floor.count + variation);
         let status = 'light';
-        if (newCount > 100) status = 'busy';
-        else if (newCount > 60) status = 'moderate';
+        if (newCount > 120) status = 'busy';
+        else if (newCount > 80) status = 'moderate';
         
         return { ...floor, count: newCount, status };
       });
@@ -67,10 +83,21 @@ const CrowdScreen = () => {
         const variation = Math.floor(Math.random() * 4) - 2;
         const newCount = Math.max(0, exhibit.count + variation);
         let status = 'light';
-        if (newCount > 30) status = 'busy';
-        else if (newCount > 20) status = 'moderate';
+        if (newCount > 35) status = 'busy';
+        else if (newCount > 25) status = 'moderate';
         
         return { ...exhibit, count: newCount, status };
+      });
+      
+      // Update time of day data
+      const newTimeOfDay = crowdData.timeOfDay.map(slot => {
+        const variation = Math.floor(Math.random() * 8) - 4;
+        const newVisitors = Math.max(0, slot.visitors + variation);
+        let status = 'light';
+        if (newVisitors > 175) status = 'busy';
+        else if (newVisitors > 100) status = 'moderate';
+        
+        return { ...slot, visitors: newVisitors, status };
       });
       
       setCrowdData({
@@ -78,6 +105,7 @@ const CrowdScreen = () => {
         totalVisitors: newTotalVisitors,
         floors: newFloors,
         exhibits: newExhibits,
+        timeOfDay: newTimeOfDay,
         lastUpdated: new Date()
       });
     }, 10000); // Update every 10 seconds
@@ -100,6 +128,11 @@ const CrowdScreen = () => {
     if (seconds < 60) return `${seconds} seconds ago`;
     if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
     return `${Math.floor(seconds / 3600)} hours ago`;
+  };
+  
+  const handleBarPress = (timeSlot) => {
+    setSelectedTimeSlot(timeSlot);
+    setTimeModalVisible(true);
   };
   
   return (
@@ -180,28 +213,49 @@ const CrowdScreen = () => {
         {/* Overview View */}
         {selectedView === 'overview' && (
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Crowd Heatmap</Text>
-            <Image 
-              source={require('../../assets/images/heatmap.jpg')}
-              style={styles.heatmapImage}
-              resizeMode="contain"
-            />
+            <Text style={styles.infoMessage}>
+              View the crowd heatmap in the Navigation screen for a visual representation of crowded areas.
+            </Text>
             
             <Text style={styles.sectionTitle}>Today's Visitor Count</Text>
             <View style={styles.chartContainer}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chartContent}>
                 {crowdData.timeOfDay.map((item, index) => (
-                  <View key={index} style={styles.chartBarContainer}>
+                  <TouchableOpacity 
+                    key={index} 
+                    style={styles.chartBarContainer}
+                    onPress={() => handleBarPress(item)}
+                    activeOpacity={0.7}
+                  >
                     <View 
                       style={[
                         styles.chartBar, 
-                        { height: (item.visitors / 250) * 150 }
+                        { 
+                          height: (item.visitors / 250) * 150,
+                          backgroundColor: getStatusColor(item.status)
+                        }
                       ]}
                     />
                     <Text style={styles.chartLabel}>{item.hour}</Text>
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </ScrollView>
+            </View>
+            
+            <View style={styles.crowdLegend}>
+              <Text style={styles.legendTitle}>Crowd Level Legend:</Text>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, {backgroundColor: '#4caf50'}]} />
+                <Text style={styles.legendText}>Light (Good time to visit)</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, {backgroundColor: '#ff9800'}]} />
+                <Text style={styles.legendText}>Moderate (Average wait times)</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, {backgroundColor: '#f44336'}]} />
+                <Text style={styles.legendText}>Busy (Consider visiting later)</Text>
+              </View>
             </View>
           </View>
         )}
@@ -229,6 +283,11 @@ const CrowdScreen = () => {
                   </View>
                   <View style={styles.floorInfoText}>
                     <Text style={styles.floorInfoLabel}>Visitors</Text>
+                    <Text style={styles.floorInfoExhibits}>
+                      {floor.id === 1 ? 
+                        'Pearl Diving, Desert Life, Modern Architecture' : 
+                        'Islamic Golden Age, Calligraphy'}
+                    </Text>
                     <Text style={styles.crowdAdvice}>
                       {floor.status === 'busy' 
                         ? 'Consider visiting this floor later' 
@@ -258,11 +317,65 @@ const CrowdScreen = () => {
                     { backgroundColor: getStatusColor(exhibit.status) }
                   ]} />
                 </View>
+                <Text style={styles.exhibitLocation}>
+                  {(exhibit.id === '1' || exhibit.id === '3' || exhibit.id === '4') ? 
+                    'Floor 1' : 'Floor 2'}
+                </Text>
               </View>
             ))}
           </View>
         )}
       </ScrollView>
+      
+      {/* Time Slot Detail Modal */}
+      <Modal
+        visible={timeModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setTimeModalVisible(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setTimeModalVisible(false)}
+        >
+          {selectedTimeSlot && (
+            <View style={styles.timeModalContent}>
+              <View style={styles.timeModalHeader}>
+                <Text style={styles.timeModalTitle}>{selectedTimeSlot.hour} Visitor Data</Text>
+                <TouchableOpacity onPress={() => setTimeModalVisible(false)}>
+                  <Ionicons name="close-circle" size={24} color="#8C52FF" />
+                </TouchableOpacity>
+              </View>
+              
+              <View style={styles.timeDataContainer}>
+                <View style={styles.timeVisitorCircle}>
+                  <Text style={styles.timeVisitorCount}>{selectedTimeSlot.visitors}</Text>
+                  <Text style={styles.timeVisitorLabel}>Visitors</Text>
+                </View>
+                
+                <View style={styles.timeStatusContainer}>
+                  <Text style={styles.timeStatusLabel}>Crowd Status:</Text>
+                  <View style={[
+                    styles.timeStatusBadge,
+                    { backgroundColor: getStatusColor(selectedTimeSlot.status) }
+                  ]}>
+                    <Text style={styles.timeStatusText}>{selectedTimeSlot.status}</Text>
+                  </View>
+                  
+                  <Text style={styles.timeAdvice}>
+                    {selectedTimeSlot.status === 'busy' 
+                      ? 'This is a peak time with high visitor count. Consider visiting during another time slot for a less crowded experience.'
+                      : selectedTimeSlot.status === 'moderate'
+                        ? 'This time has an average number of visitors. Expect some waiting time at popular exhibits.'
+                        : 'This is a great time to visit! Lower visitor numbers mean more space and shorter wait times.'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -355,11 +468,16 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 16,
   },
-  heatmapImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 16,
+  infoMessage: {
+    backgroundColor: 'rgba(140, 82, 255, 0.1)',
+    padding: 16,
+    borderRadius: 12,
     marginBottom: 24,
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#8C52FF',
   },
   chartContainer: {
     backgroundColor: 'white',
@@ -381,10 +499,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 40,
     marginHorizontal: 6,
+    justifyContent: 'flex-end',
+    height: 180,
   },
   chartBar: {
     width: '100%',
-    backgroundColor: '#8C52FF',
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
   },
@@ -392,6 +511,33 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 12,
     color: '#666',
+  },
+  crowdLegend: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+  },
+  legendTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  legendDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#555',
   },
   floorCard: {
     backgroundColor: 'white',
@@ -452,6 +598,11 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 4,
   },
+  floorInfoExhibits: {
+    fontSize: 12,
+    color: '#888',
+    marginBottom: 4,
+  },
   crowdAdvice: {
     fontSize: 14,
     color: '#333',
@@ -477,6 +628,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 4,
   },
   exhibitCrowdCount: {
     fontSize: 14,
@@ -487,6 +639,87 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
   },
+  exhibitLocation: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 4,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    width: '85%',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  timeModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  timeModalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  timeDataContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  timeVisitorCircle: {
+    width: 80,
+    height: 80,
+    backgroundColor: 'rgba(140, 82, 255, 0.1)',
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  timeVisitorCount: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#8C52FF',
+  },
+  timeVisitorLabel: {
+    fontSize: 12,
+    color: '#666',
+  },
+  timeStatusContainer: {
+    flex: 1,
+  },
+  timeStatusLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  timeStatusBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  timeStatusText: {
+    color: '#fff',
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  timeAdvice: {
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
+  }
 });
 
 export default CrowdScreen;
