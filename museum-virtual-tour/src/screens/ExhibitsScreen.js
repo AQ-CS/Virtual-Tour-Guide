@@ -1,4 +1,4 @@
-// File: src/screens/ExhibitsScreen.js - With null check for currentUser
+// File: src/screens/ExhibitsScreen.js - With dynamic image loading
 
 import React, { useState, useContext, useEffect } from 'react';
 import { 
@@ -20,6 +20,17 @@ import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
 
+// Define an image map - matching the one in ExhibitCard.js for consistency
+const exhibitImages = {
+  'pearl_diving.png': require('../../assets/models/pearl_diving.png'),
+  'pearl_diving.jpg': require('../../assets/models/pearl_diving.png'),
+  'islamic_innovations.jpg': require('../../assets/models/golden_age.png'),
+  'desert_life.jpg': require('../../assets/models/desert_life.png'),
+  'uae_architecture.jpg': require('../../assets/models/uae_architecture.png'),
+  'calligraphy.jpg': require('../../assets/models/calligraphy.png'),
+  // Add other exhibit images as needed
+};
+
 const ExhibitsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -33,6 +44,22 @@ const ExhibitsScreen = () => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [selectedExhibitRating, setSelectedExhibitRating] = useState(0);
   const [selectedExhibitComment, setSelectedExhibitComment] = useState('');
+
+  // Get image source from map or default to placeholder
+  const getImageSource = (imagePath) => {
+    // If it's a URL, return as uri
+    if (imagePath && imagePath.startsWith('http')) {
+      return { uri: imagePath };
+    }
+    
+    // If the image exists in our map, use it
+    if (imagePath && exhibitImages[imagePath]) {
+      return exhibitImages[imagePath];
+    }
+    
+    // Otherwise use placeholder
+    return require('../../assets/images/placeholder.png');
+  };
 
   // Show loading indicator if data isn't ready yet
   if (isLoading || !currentUser) {
@@ -227,11 +254,7 @@ const ExhibitsScreen = () => {
             <ScrollView style={styles.modalContent}>
               <View style={styles.exhibitImageContainer}>
                 <Image 
-                  source={
-                    selectedExhibit.image.includes('http') 
-                      ? { uri: selectedExhibit.image } 
-                      : require('../../assets/images/placeholder.png')
-                  }
+                  source={getImageSource(selectedExhibit.image)}
                   style={styles.exhibitImage}
                 />
               </View>

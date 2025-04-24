@@ -29,7 +29,7 @@ const NavigationScreen = () => {
   const [selectedExhibit, setSelectedExhibit] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
-  const [heatmapIntensity, setHeatmapIntensity] = useState(0.7); // Default intensity
+  const [heatmapIntensity, setHeatmapIntensity] = useState(0.5); // Set to medium as default
   const [floor1Image, setFloor1Image] = useState('');
   const [floor2Image, setFloor2Image] = useState('');
   const [visitorCounts, setVisitorCounts] = useState({
@@ -121,13 +121,6 @@ const NavigationScreen = () => {
           .exhibit-marker:hover {
             transform: translate(-50%, -50%) scale(1.2);
           }
-          .navigation-path {
-            position: absolute;
-            height: 5px;
-            background-color: #8C52FF;
-            transform-origin: 0 0;
-            z-index: 5;
-          }
           .current-location {
             position: absolute;
             width: 15px;
@@ -138,6 +131,18 @@ const NavigationScreen = () => {
             z-index: 10;
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          }
+          .you-are-here {
+            position: absolute;
+            font-size: 15px;
+            font-weight: bold;
+            transform: translate(-50%, -150%);
+            white-space: nowrap;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
           }
           .heatmap-overlay {
             position: absolute;
@@ -160,17 +165,18 @@ const NavigationScreen = () => {
           #floor-2 {
             background-image: url('${floor2Image}');
           }
-          /* Improved heatmap gradients with smaller, more constricted hotspots */
+          /* Improved heatmap gradients with smaller, more constricted hotspots (halved size) */
           #heatmap-1 {
             background: 
-              radial-gradient(circle at 22% 26%, rgba(244, 67, 54, 0.9) 0%, rgba(244, 67, 54, 0.7) 10%, rgba(255, 152, 0, 0.4) 20%, rgba(76, 175, 80, 0.2) 30%, transparent 40%),
-              radial-gradient(circle at 65% 35%, rgba(244, 67, 54, 0.8) 0%, rgba(255, 152, 0, 0.6) 15%, rgba(76, 175, 80, 0.3) 25%, transparent 35%),
-              radial-gradient(circle at 50% 58%, rgba(244, 67, 54, 0.9) 0%, rgba(255, 152, 0, 0.7) 10%, rgba(76, 175, 80, 0.3) 20%, transparent 30%);
+              radial-gradient(circle at 22% 30%, rgba(244, 133, 54, 0.9) 0%, rgba(244, 152, 54, 0.7) 5%, rgba(255, 152, 0, 0.4) 10%, rgba(76, 175, 80, 0.2) 15%, transparent 20%),
+              radial-gradient(circle at 22% 60%, rgba(244, 67, 54, 0.9) 0%, rgba(244, 67, 54, 0.7) 5%, rgba(255, 152, 0, 0.4) 10%, rgba(76, 175, 80, 0.2) 15%, transparent 20%),
+              radial-gradient(circle at 55% 27%, rgba(244, 67, 54, 0.8) 0%, rgba(255, 152, 0, 0.6) 0%, rgba(76, 175, 80, 0.3) 12%, transparent 17%),
+              radial-gradient(circle at 50% 52%, rgba(244, 67, 54, 0.9) 0%, rgba(255, 152, 0, 0.7) 5%, rgba(76, 175, 80, 0.3) 10%, transparent 15%);
           }
           #heatmap-2 {
             background: 
-              radial-gradient(circle at 30% 30%, rgba(244, 67, 54, 0.9) 0%, rgba(255, 152, 0, 0.6) 12%, rgba(76, 175, 80, 0.3) 24%, transparent 36%),
-              radial-gradient(circle at 20% 60%, rgba(255, 152, 0, 0.8) 0%, rgba(255, 152, 0, 0.5) 15%, rgba(76, 175, 80, 0.3) 25%, transparent 35%);
+              radial-gradient(circle at 30% 30%, rgba(244, 67, 54, 0.9) 0%, rgba(255, 152, 0, 0.6) 6%, rgba(76, 175, 80, 0.3) 12%, transparent 18%),
+              radial-gradient(circle at 20% 60%, rgba(255, 152, 0, 0.8) 0%, rgba(255, 152, 0, 0.5) 7%, rgba(76, 175, 80, 0.3) 12%, transparent 17%);
           }
         </style>
       </head>
@@ -182,15 +188,14 @@ const NavigationScreen = () => {
             <div id="heatmap-1" class="heatmap-overlay" style="opacity: ${showHeatmap ? heatmapIntensity : 0};"></div>
             
             <!-- Floor 1 Exhibit Markers -->
-            <div class="exhibit-marker" id="exhibit-1" style="top: 26%; left: 22%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:1:${visitorCounts['1']}')"></div>
-            <div class="exhibit-marker" id="exhibit-3" style="top: 30%; left: 65%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:3:${visitorCounts['3']}')"></div>
+            <div class="exhibit-marker" id="exhibit-1" style="top: 40%; left: 21.5%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:1:${visitorCounts['1']}')"></div>
+            <div class="exhibit-marker" id="exhibit-1" style="top: 67%; left: 21.5%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:1:${visitorCounts['1']}')"></div>
+            <div class="exhibit-marker" id="exhibit-3" style="top: 32%; left: 55%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:3:${visitorCounts['3']}')"></div>
             <div class="exhibit-marker" id="exhibit-4" style="top: 58%; left: 50%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:4:${visitorCounts['4']}')"></div>
             
-            <!-- Navigation path shown when navigating -->
-            <div id="navigation-path-1" class="navigation-path" style="display: none;"></div>
-            
-            <!-- Current user location -->
-            <div id="current-location-1" class="current-location" style="top: 85%; left: 50%;"></div>
+            <!-- Current user location - moved up a bit -->
+            <div id="current-location-1" class="current-location" style="top: 65%; left: 50%;"></div>
+            <div class="you-are-here" style="top: 65%; left: 50%;">You are here</div>
           </div>
           
           <!-- Floor 2 Layout -->
@@ -201,40 +206,11 @@ const NavigationScreen = () => {
             <!-- Floor 2 Exhibit Markers -->
             <div class="exhibit-marker" id="exhibit-2" style="top: 30%; left: 30%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:2:${visitorCounts['2']}')"></div>
             <div class="exhibit-marker" id="exhibit-5" style="top: 60%; left: 20%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:5:${visitorCounts['5']}')"></div>
-            
-            <!-- Navigation path shown when navigating -->
-            <div id="navigation-path-2" class="navigation-path" style="display: none;"></div>
-            
-            <!-- Current user location -->
-            <div id="current-location-2" class="current-location" style="top: 80%; left: 60%;"></div>
+          
           </div>
         </div>
         
         <script>
-          // Simple JavaScript to show navigation when triggered
-          function startNavigation(floor, x, y) {
-            const path = document.getElementById('navigation-path-' + floor);
-            const currentLocation = document.getElementById('current-location-' + floor);
-            
-            if (!path || !currentLocation) return;
-            
-            const startX = parseFloat(currentLocation.style.left);
-            const startY = parseFloat(currentLocation.style.top);
-            
-            // Calculate path position and rotation
-            const dx = x - startX;
-            const dy = y - startY;
-            const length = Math.sqrt(dx*dx + dy*dy);
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-            
-            // Position the path
-            path.style.left = startX + '%';
-            path.style.top = startY + '%';
-            path.style.width = length + '%';
-            path.style.transform = 'rotate(' + angle + 'deg)';
-            path.style.display = 'block';
-          }
-          
           // Show the current floor
           function showFloor(floorNumber) {
             const floors = document.querySelectorAll('.floor-layout');
@@ -312,7 +288,7 @@ const NavigationScreen = () => {
     }
   };
   
-  // Update heatmap intensity
+  // Update heatmap intensity - called but not exposed in UI anymore
   const updateHeatmapIntensity = (intensity) => {
     setHeatmapIntensity(intensity);
     if (webViewRef.current && showHeatmap) {
@@ -326,21 +302,6 @@ const NavigationScreen = () => {
       webViewRef.current.injectJavaScript(`updateMarkerColors(${JSON.stringify(visitorCounts)}); true;`);
     }
   }, [visitorCounts]);
-  
-  // Start navigation
-  const startNavigation = () => {
-    if (!selectedExhibit) return;
-    
-    setIsNavigating(true);
-    setFindExhibitModalVisible(false);
-    
-    // Get coordinates from the selected exhibit
-    const { coordinates } = selectedExhibit;
-    if (webViewRef.current && coordinates) {
-      const jsCode = `startNavigation(${coordinates.floor}, ${coordinates.x}, ${coordinates.y}); true;`;
-      webViewRef.current.injectJavaScript(jsCode);
-    }
-  };
   
   // Handle messages from WebView
   const handleWebViewMessage = (event) => {
@@ -367,7 +328,6 @@ const NavigationScreen = () => {
       
       if (exhibit) {
         setSelectedExhibit(exhibit);
-        // Optionally, you could also show details or start navigation here
       }
     }
   };
@@ -418,7 +378,7 @@ const NavigationScreen = () => {
           />
         </View>
         
-        {/* Heatmap Controls */}
+        {/* Heatmap Controls - removed slider */}
         <View style={styles.heatmapControls}>
           <View style={styles.heatmapToggle}>
             <Text style={styles.heatmapLabel}>Show Crowd Heatmap</Text>
@@ -429,26 +389,9 @@ const NavigationScreen = () => {
               thumbColor={showHeatmap ? '#8C52FF' : '#f4f3f4'}
             />
           </View>
-          
-          {showHeatmap && (
-            <View style={styles.intensityControl}>
-              <Text style={styles.intensityLabel}>Low</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={0.3}
-                maximumValue={0.9}
-                value={heatmapIntensity}
-                onValueChange={updateHeatmapIntensity}
-                minimumTrackTintColor="#8C52FF"
-                maximumTrackTintColor="#d0d0d0"
-                thumbTintColor="#8C52FF"
-              />
-              <Text style={styles.intensityLabel}>High</Text>
-            </View>
-          )}
         </View>
         
-        {/* Visitor Popup */}
+        {/* Visitor Popup - removed navigate button */}
         {showVisitorPopup && popupExhibit && (
           <View style={styles.visitorPopup}>
             <View style={styles.visitorPopupHeader}>
@@ -476,34 +419,6 @@ const NavigationScreen = () => {
               <Ionicons name="location" size={16} color="#666" />
               <Text style={styles.visitorLocationText}>{popupExhibit.location}</Text>
             </View>
-            
-            <TouchableOpacity 
-              style={styles.navigateButton}
-              onPress={() => {
-                setSelectedExhibit(popupExhibit);
-                setShowVisitorPopup(false);
-                startNavigation();
-              }}
-            >
-              <Text style={styles.navigateButtonText}>Navigate to Exhibit</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        
-        {isNavigating && selectedExhibit && (
-          <View style={styles.navigationInfo}>
-            <Text style={styles.navigationTitle}>
-              Navigating to: {selectedExhibit.name}
-            </Text>
-            <Text style={styles.navigationLocation}>
-              {selectedExhibit.location}
-            </Text>
-            <TouchableOpacity 
-              style={styles.stopButton}
-              onPress={() => setIsNavigating(false)}
-            >
-              <Text style={styles.stopButtonText}>Stop Navigation</Text>
-            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -533,7 +448,7 @@ const NavigationScreen = () => {
         </View>
       </View>
       
-      {/* Find Exhibit Modal */}
+      {/* Find Exhibit Modal - removed navigation functionality */}
       <Modal
         visible={findExhibitModalVisible}
         animationType="slide"
@@ -560,6 +475,7 @@ const NavigationScreen = () => {
                     if (item.coordinates) {
                       setCurrentFloor(item.coordinates.floor);
                       handleFloorChange(item.coordinates.floor);
+                      setFindExhibitModalVisible(false);
                     }
                   }}
                 />
@@ -567,17 +483,6 @@ const NavigationScreen = () => {
               keyExtractor={item => item.id}
               contentContainerStyle={styles.exhibitsList}
             />
-            
-            {selectedExhibit && (
-              <TouchableOpacity 
-                style={styles.startButton}
-                onPress={startNavigation}
-              >
-                <Text style={styles.startButtonText}>
-                  Navigate to {selectedExhibit.name}
-                </Text>
-              </TouchableOpacity>
-            )}
           </View>
         </View>
       </Modal>
@@ -631,27 +536,11 @@ const styles = StyleSheet.create({
   heatmapToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 0,
   },
   heatmapLabel: {
     fontSize: 14,
     marginRight: 8,
     color: '#333',
-  },
-  intensityControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: 10,
-  },
-  intensityLabel: {
-    fontSize: 12,
-    color: '#666',
-    width: 30,
-  },
-  slider: {
-    flex: 1,
-    height: 40,
   },
   visitorPopup: {
     position: 'absolute',
@@ -725,52 +614,6 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 6,
   },
-  navigateButton: {
-    backgroundColor: '#8C52FF',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  navigateButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  navigationInfo: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  navigationTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  navigationLocation: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
-  },
-  stopButton: {
-    backgroundColor: '#f44336',
-    padding: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  stopButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
   floorControls: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -834,18 +677,6 @@ const styles = StyleSheet.create({
   },
   exhibitsList: {
     paddingBottom: 20,
-  },
-  startButton: {
-    backgroundColor: '#8C52FF',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  startButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
 
