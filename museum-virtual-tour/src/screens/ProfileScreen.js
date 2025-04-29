@@ -1,11 +1,10 @@
-// File: src/screens/ProfileScreen.js - With null check for currentUser
+// File: src/screens/ProfileScreen.js - Updated with ProfileAvatar component
 
 import React, { useContext, useState } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
-  Image, 
   ScrollView, 
   TouchableOpacity,
   TextInput,
@@ -18,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
+import ProfileAvatar from '../components/ProfileAvatar'; // Import the new component
 
 const ProfileScreen = () => {
   const { currentUser, setCurrentUser, exhibits, handleLogout, isLoading } = useContext(AppContext);
@@ -58,6 +58,38 @@ const ProfileScreen = () => {
       nationality
     };
     
+    // If using the old image format, convert to new profileImage format
+    if (!updatedUser.profileImage && updatedUser.name) {
+      // Generate profile image data
+      const names = name.split(' ');
+      let initials = '';
+      
+      if (names.length === 1) {
+        initials = names[0].substring(0, 2).toUpperCase();
+      } else {
+        initials = (names[0][0] + names[names.length - 1][0]).toUpperCase();
+      }
+      
+      // Generate a consistent background color based on the name
+      const colors = [
+        '#8C52FF', '#5271FF', '#52B4FF', '#52FFD0', '#52FF7D',
+        '#D0FF52', '#FFD052', '#FF7D52', '#FF5271', '#FF52B4'
+      ];
+      
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      
+      const index = Math.abs(hash) % colors.length;
+      const bgColor = colors[index];
+      
+      updatedUser.profileImage = {
+        initials,
+        backgroundColor: bgColor
+      };
+    }
+    
     setCurrentUser(updatedUser);
     setEditMode(false);
   };
@@ -81,7 +113,13 @@ const ProfileScreen = () => {
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
           <View style={styles.profileImageWrapper}>
-            <Image source={{ uri: currentUser.image }} style={styles.profileImage} />
+            {/* Replace Image with ProfileAvatar */}
+            <ProfileAvatar 
+              user={currentUser} 
+              size={100} 
+              textSize={36} 
+              style={styles.profileAvatar}
+            />
           </View>
           
           {!editMode ? (
@@ -279,10 +317,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(140, 82, 255, 0.1)',
     marginBottom: 16,
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  profileAvatar: {
+    // The ProfileAvatar component handles size, this is for additional styling if needed
   },
   userInfo: {
     alignItems: 'center',

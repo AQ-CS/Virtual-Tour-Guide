@@ -1,4 +1,4 @@
-// File: src/screens/ExhibitsScreen.js - With dynamic image loading
+// File: src/screens/ExhibitsScreen.js - Fixed version
 
 import React, { useState, useContext, useEffect } from 'react';
 import { 
@@ -61,23 +61,7 @@ const ExhibitsScreen = () => {
     return require('../../assets/images/placeholder.png');
   };
 
-  // Show loading indicator if data isn't ready yet
-  if (isLoading || !currentUser) {
-    return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <LinearGradient
-          colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.backgroundGradient}
-        />
-        <ActivityIndicator size="large" color="#ffffff" />
-        <Text style={styles.loadingText}>Loading exhibits...</Text>
-      </View>
-    );
-  }
-  
-  // Extract all unique categories
+  // Extract all unique categories - MOVED before conditional rendering
   useEffect(() => {
     if (exhibits) {
       const uniqueCategories = ['All', ...new Set(exhibits.map(exhibit => exhibit.category))];
@@ -85,7 +69,7 @@ const ExhibitsScreen = () => {
     }
   }, [exhibits]);
   
-  // Filter exhibits based on search and category
+  // Filter exhibits based on search and category - MOVED before conditional rendering
   useEffect(() => {
     if (exhibits) {
       let filtered = [...exhibits];
@@ -114,11 +98,11 @@ const ExhibitsScreen = () => {
         }
       }
     }
-  }, [exhibits, searchQuery, selectedCategory, route.params]);
+  }, [exhibits, searchQuery, selectedCategory, route.params, navigation]);
   
   const addToTour = (exhibit) => {
     // Check if user has any upcoming tours
-    const userTours = tours.filter(t => t.userId === currentUser.id && t.status === 'upcoming');
+    const userTours = tours?.filter(t => t.userId === currentUser?.id && t.status === 'upcoming') || [];
     
     if (userTours.length === 0) {
       // Redirect to tour creation
@@ -166,6 +150,22 @@ const ExhibitsScreen = () => {
       </Text>
     </TouchableOpacity>
   );
+  
+  // Use conditional rendering instead of early return
+  if (isLoading || !currentUser) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <LinearGradient
+          colors={['#8C52FF', '#A67FFB', '#F0EBFF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.backgroundGradient}
+        />
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={styles.loadingText}>Loading exhibits...</Text>
+      </View>
+    );
+  }
   
   return (
     <View style={styles.container}>

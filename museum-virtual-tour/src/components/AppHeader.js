@@ -1,12 +1,15 @@
-// File: src/components/AppHeader.js - Updated header component with gradient compatibility
+// File: src/components/AppHeader.js - Updated with ProfileAvatar support
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppContext } from '../AppContext';
+import ProfileAvatar from './ProfileAvatar';
 
-const AppHeader = ({ title, onBackPress, rightIcon, onRightPress }) => {
+const AppHeader = ({ title, onBackPress, rightIcon, onRightPress, showProfile = false }) => {
   const insets = useSafeAreaInsets();
+  const { currentUser } = useContext(AppContext);
   
   return (
     <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
@@ -23,6 +26,18 @@ const AppHeader = ({ title, onBackPress, rightIcon, onRightPress }) => {
       {rightIcon ? (
         <TouchableOpacity onPress={onRightPress} style={styles.rightButton}>
           <Ionicons name={rightIcon} size={24} color="#fff" />
+        </TouchableOpacity>
+      ) : showProfile && currentUser ? (
+        <TouchableOpacity 
+          onPress={onRightPress} 
+          style={styles.profileButtonContainer}
+        >
+          <ProfileAvatar 
+            user={currentUser} 
+            size={36} 
+            textSize={14} 
+            style={styles.profileButton}
+          />
         </TouchableOpacity>
       ) : (
         <View style={styles.placeholderView} />
@@ -63,6 +78,16 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
+  profileButtonContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profileButton: {
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+  }
 });
 
 export default AppHeader;

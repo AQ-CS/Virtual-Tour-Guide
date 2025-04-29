@@ -125,7 +125,7 @@ const NavigationScreen = () => {
             position: absolute;
             width: 15px;
             height: 15px;
-            background-color: #f44336;
+            background-color:rgb(54, 101, 244);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
@@ -189,7 +189,6 @@ const NavigationScreen = () => {
             
             <!-- Floor 1 Exhibit Markers -->
             <div class="exhibit-marker" id="exhibit-1" style="top: 40%; left: 21.5%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:1:${visitorCounts['1']}')"></div>
-            <div class="exhibit-marker" id="exhibit-1" style="top: 67%; left: 21.5%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:1:${visitorCounts['1']}')"></div>
             <div class="exhibit-marker" id="exhibit-3" style="top: 32%; left: 55%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:3:${visitorCounts['3']}')"></div>
             <div class="exhibit-marker" id="exhibit-4" style="top: 58%; left: 50%;" onclick="window.ReactNativeWebView.postMessage('exhibit_count:4:${visitorCounts['4']}')"></div>
             

@@ -1,4 +1,4 @@
-// File: src/screens/AuthScreen.js - Combined login/register with updated color scheme
+// File: src/screens/AuthScreen.js - Updated with initials profile image
 
 import React, { useState, useContext } from 'react';
 import { 
@@ -11,7 +11,6 @@ import {
   KeyboardAvoidingView, 
   Platform,
   ScrollView,
-  ImageBackground,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
@@ -25,6 +24,58 @@ const AuthScreen = () => {
   const [nationality, setNationality] = useState('');
   
   const { users, setUsers, setIsLoggedIn, setCurrentUser } = useContext(AppContext);
+  
+  // Function to generate initials from name
+  const getInitials = (fullName) => {
+    if (!fullName) return '';
+    
+    const names = fullName.split(' ');
+    
+    // If only one name, return first two letters
+    if (names.length === 1) {
+      return names[0].substring(0, 2).toUpperCase();
+    }
+    
+    // Get first letter of first name and first letter of last name
+    const firstInitial = names[0][0];
+    const lastInitial = names[names.length - 1][0];
+    
+    return (firstInitial + lastInitial).toUpperCase();
+  };
+  
+  // Function to generate a profile image SVG with initials
+  const generateInitialsProfileImage = (fullName) => {
+    const initials = getInitials(fullName);
+    
+    // Generate a consistent background color based on the name
+    const getColorFromName = (name) => {
+      const colors = [
+        '#8C52FF', // Purple (primary color)
+        '#5271FF', // Blue
+        '#52B4FF', // Light Blue
+        '#52FF7D', // Green
+        '#FFD052', // Gold
+        '#FF7D52', // Orange
+      ];
+      
+      // Simple hash function to get a consistent color for the same name
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      
+      // Use the hash to pick a color
+      const index = Math.abs(hash) % colors.length;
+      return colors[index];
+    };
+    
+    const bgColor = getColorFromName(fullName);
+    
+    return {
+      initials,
+      backgroundColor: bgColor
+    };
+  };
   
   const handleAuth = () => {
     if (isLogin) {
@@ -49,6 +100,9 @@ const AuthScreen = () => {
         return;
       }
       
+      // Generate profile image data
+      const profileImage = generateInitialsProfileImage(name);
+      
       // Create new user
       const newUser = {
         id: (users.length + 1).toString(),
@@ -61,9 +115,12 @@ const AuthScreen = () => {
           favoriteCategories: [],
           favoriteExhibits: []
         },
-        image: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 100)}.jpg`
+        profileImage: profileImage, // Save initials and background color
+        // This removes the random user API and replaces with our initials approach
       };
       
+      // Add new user to users array in AppContext
+      // The useEffect in AppContext will handle saving to AsyncStorage
       setUsers([...users, newUser]);
       setCurrentUser(newUser);
       setIsLoggedIn(true);

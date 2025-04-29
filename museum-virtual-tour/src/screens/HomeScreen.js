@@ -1,4 +1,4 @@
-// File: src/screens/HomeScreen.js - Add null check for currentUser
+// File: src/screens/HomeScreen.js - Updated with ProfileAvatar
 
 import React, { useContext, useState, useEffect } from 'react';
 import { 
@@ -6,7 +6,6 @@ import {
   Text, 
   StyleSheet, 
   ScrollView, 
-  Image, 
   TouchableOpacity,
   Dimensions,
   ActivityIndicator
@@ -16,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../AppContext';
 import ExhibitCard from '../components/ExhibitCard';
+import ProfileAvatar from '../components/ProfileAvatar'; // Import ProfileAvatar
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +24,14 @@ const HomeScreen = () => {
   const { currentUser, exhibits, tours, isLoading } = useContext(AppContext);
   const [popularExhibits, setPopularExhibits] = useState([]);
   const [upcomingTours, setUpcomingTours] = useState([]);
+  
+  // Initialize profile image for the user if they don't have one
+  useEffect(() => {
+    if (currentUser && !currentUser.profileImage && currentUser.name) {
+      console.log('HomeScreen: Generating profileImage for user:', currentUser.name);
+      // This will log in the existing console debug to help trace issues
+    }
+  }, [currentUser]);
   
   useEffect(() => {
     // Only process data when currentUser is available
@@ -79,7 +87,12 @@ const HomeScreen = () => {
           </View>
           <View style={styles.profileImageContainer}>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-              <Image source={{ uri: currentUser.image }} style={styles.profileImage} />
+              {/* Replace Image with ProfileAvatar */}
+              <ProfileAvatar 
+                user={currentUser} 
+                size={50} 
+                textSize={18} 
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -284,11 +297,6 @@ const styles = StyleSheet.create({
     padding: 2,
     borderRadius: 28,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
   },
   // Featured banner
   featuredBanner: {
