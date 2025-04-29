@@ -1,6 +1,6 @@
-// File: src/screens/ProfileScreen.js - Updated with ProfileAvatar component
+// File: src/screens/ProfileScreen.js - Updated with image upload functionality
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -10,14 +10,18 @@ import {
   TextInput,
   Modal,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
+  Platform,
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
 import { AppContext } from '../AppContext';
 import AppHeader from '../components/AppHeader';
 import ExhibitCard from '../components/ExhibitCard';
-import ProfileAvatar from '../components/ProfileAvatar'; // Import the new component
+import ProfileAvatar from '../components/ProfileAvatar';
 
 const ProfileScreen = () => {
   const { currentUser, setCurrentUser, exhibits, handleLogout, isLoading } = useContext(AppContext);
@@ -28,6 +32,17 @@ const ProfileScreen = () => {
   const [name, setName] = useState(currentUser?.name || '');
   const [email, setEmail] = useState(currentUser?.email || '');
   const [nationality, setNationality] = useState(currentUser?.nationality || '');
+  const [profileImageURI, setProfileImageURI] = useState(currentUser?.profileImageURI || null);
+  
+  // Update local state if currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name || '');
+      setEmail(currentUser.email || '');
+      setNationality(currentUser.nationality || '');
+      setProfileImageURI(currentUser.profileImageURI || null);
+    }
+  }, [currentUser]);
   
   // Show loading indicator if data isn't ready yet
   if (isLoading || !currentUser) {
@@ -50,17 +65,55 @@ const ProfileScreen = () => {
     currentUser.preferences.favoriteExhibits.includes(exhibit.id)
   );
   
+  // Request permission to access the photo library
+  const requestGalleryPermission = async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'We need access to your photo library to upload a profile picture.');
+        return false;
+      }
+      return true;
+    }
+    return true;
+  };
+  
+  // Handle selecting an image from the gallery
+  const pickImage = async () => {
+    const hasPermission = await requestGalleryPermission();
+    
+    if (hasPermission) {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setProfileImageURI(result.assets[0].uri);
+      }
+    }
+  };
+  
   const handleSaveProfile = () => {
     const updatedUser = {
       ...currentUser,
       name,
       email,
-      nationality
+      nationality,
+      profileImageURI // Add the profile image URI to the user object
     };
     
-    // If using the old image format, convert to new profileImage format
-    if (!updatedUser.profileImage && updatedUser.name) {
-      // Generate profile image data
+    // If using profile image URI, don't need the old initials-based image
+    if (profileImageURI) {
+      // Keep the profileImage object but mark it as not to be used
+      updatedUser.profileImage = {
+        ...updatedUser.profileImage,
+        useInitials: false
+      };
+    } else if (!updatedUser.profileImage || updatedUser.profileImage.useInitials === false) {
+      // If no image URI and no valid profile image, generate one based on initials
       const names = name.split(' ');
       let initials = '';
       
@@ -86,7 +139,8 @@ const ProfileScreen = () => {
       
       updatedUser.profileImage = {
         initials,
-        backgroundColor: bgColor
+        backgroundColor: bgColor,
+        useInitials: true
       };
     }
     
@@ -113,13 +167,22 @@ const ProfileScreen = () => {
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
           <View style={styles.profileImageWrapper}>
-            {/* Replace Image with ProfileAvatar */}
+            {/* We'll let the ProfileAvatar component handle the image display logic */}
             <ProfileAvatar 
-              user={currentUser} 
+              user={{...currentUser, profileImageURI}} 
               size={100} 
               textSize={36} 
               style={styles.profileAvatar}
             />
+            
+            {editMode && (
+              <TouchableOpacity 
+                style={styles.editImageButton}
+                onPress={pickImage}
+              >
+                <Ionicons name="camera" size={20} color="#fff" />
+              </TouchableOpacity>
+            )}
           </View>
           
           {!editMode ? (
@@ -159,6 +222,7 @@ const ProfileScreen = () => {
                     setName(currentUser.name);
                     setEmail(currentUser.email);
                     setNationality(currentUser.nationality || '');
+                    setProfileImageURI(currentUser.profileImageURI || null);
                     setEditMode(false);
                   }}
                 >
@@ -312,6 +376,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   profileImageWrapper: {
+    position: 'relative',
     padding: 3,
     borderRadius: 53,
     backgroundColor: 'rgba(140, 82, 255, 0.1)',
@@ -319,6 +384,19 @@ const styles = StyleSheet.create({
   },
   profileAvatar: {
     // The ProfileAvatar component handles size, this is for additional styling if needed
+  },
+  editImageButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#8C52FF',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
   },
   userInfo: {
     alignItems: 'center',

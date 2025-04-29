@@ -1,5 +1,4 @@
-// File: src/components/AppHeader.js - Updated with ProfileAvatar support
-
+// File: src/components/AppHeader.js - Updated with ProfileAvatar image support
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
